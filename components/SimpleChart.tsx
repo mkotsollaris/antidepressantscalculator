@@ -12,9 +12,9 @@ const SimpleChart = () => {
     const substrateConcentration = [];
     const reactionRate = [];
 
-    for (var i = 0; i <= 60; i+=10) {
-    substrateConcentration.push(`${i} mg`);
-    reactionRate.push(vMax * i / (km + i));
+    for (var i = 0; i <= 100; i+=1) {
+      substrateConcentration.push(`${i}`);
+      reactionRate.push(vMax * i / (km + i));
     }
 
 const data = {
@@ -32,6 +32,7 @@ const data = {
 };
 
 const options = {
+  pointRadius: 0,
   responsive: true,
     plugins: {
       tooltip: {
@@ -40,20 +41,20 @@ const options = {
       },
     },
     maintainAspectRatio: false,
-  scales: {
-    x: {
-      title: {
-        display: true,
-        text: 'Drug Dose (mg)'
-      }
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Drug Dose (mg)'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Receptor Occupancy (%)'
+        }
+      },
     },
-    y: {
-      title: {
-        display: true,
-        text: 'Receptor Occupancy (%)'
-      }
-    },
-  },
 };
 
     return <div>
