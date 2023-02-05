@@ -8,8 +8,8 @@ ChartJS.register(...registerables);
 
 const SimpleChart = () => {
 
-    const [vMax, setVmax] = useState(100);
-    const [km, setKm] = useState(50);
+    const [vMax, setVmax] = useState(83.98);
+    const [km, setKm] = useState(2.33);
 
     const substrateConcentration = [];
     const reactionRate = [];
@@ -58,16 +58,23 @@ const options = {
 };
 
     return <div>
-        <div>
-            Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
-        </div>
-        <span>Vmax: </span>
-        <input placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(Number(e.target.value))}/>
-        <span>Km:</span>
-        <input placeholder='Km input'  value={km} onChange={(e)=> setKm(Number(e.target.value))}/>
-        <br/><br/>
+      <div>
+        <h2><strong>Citalopram</strong> with Region of Interest <strong>Striatum</strong></h2>
+      </div>
+      <div>
+        Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
+      </div>
+      <span>Vmax: </span>
+      {/* @ts-ignore */}
+      <input type="number" placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(e.target.value)}/>
+      <span>Km:</span>
+      {/* @ts-ignore */}
+      <input placeholder='Km input' type="number" value={km} onChange={(e)=> setKm(e.target.value)}/>
+      <br/><br/>
+      <div style={{maxHeight: '50rem'}}>
         {/* @ts-ignore */}
         <Line data={data} options={options} />
+      </div>
     </div>
 }
 
