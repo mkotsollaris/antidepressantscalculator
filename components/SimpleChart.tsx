@@ -59,12 +59,13 @@ const options = {
 
     return <div>
         <div>
-            Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/><br/><br/>
+            Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
         </div>
         <span>Vmax: </span>
         <input placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(Number(e.target.value))}/>
         <span>Km:</span>
         <input placeholder='Km input'  value={km} onChange={(e)=> setKm(Number(e.target.value))}/>
+        <br/><br/>
         <Line data={data} options={options} />
     </div>
 }
