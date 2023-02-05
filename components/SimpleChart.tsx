@@ -1,10 +1,8 @@
-"use client"
 import React, { useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
 ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
-
 
 const SimpleChart = () => {
 
@@ -15,7 +13,7 @@ const SimpleChart = () => {
     const reactionRate = [];
 
     for (var i = 0; i <= 60; i+=10) {
-    substrateConcentration.push(i);
+    substrateConcentration.push(`${i} mg`);
     reactionRate.push(vMax * i / (km + i));
     }
 
@@ -41,6 +39,7 @@ const options = {
         intersect: false
       },
     },
+    maintainAspectRatio: false,
   scales: {
     x: {
       title: {
@@ -55,16 +54,6 @@ const options = {
       }
     },
   },
-  tooltips: {
-    callbacks: {
-      label: (tooltipItem: any, data: any) => {
-        const dataset = data.datasets[tooltipItem.datasetIndex];
-        const index = tooltipItem.index;
-        return `Substrate Concentration: ${data.labels[index]} 
-                Reaction Rate: ${dataset.data[index]}`;
-      },
-    },
-  },
 };
 
     return <div>
@@ -74,16 +63,20 @@ const options = {
       <div>
         Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
       </div>
+      <div style={{
+        display: 'flex'
+      }}>
       <strong>Vmax: </strong>
       {/* @ts-ignore */}
       <input type="number" placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(e.target.value)}/>
       <strong>{' '}Km:</strong>
       {/* @ts-ignore */}
       <input placeholder='Km input' type="number" value={km} onChange={(e)=> setKm(e.target.value)}/>
+      </div>
       <br/><br/>
       <div>
         {/* @ts-ignore */}
-        <Line height={200} width={800} data={data} options={options} />
+        <Line height={600} width={800} data={data} options={options} />
       </div>
     </div>
 }
