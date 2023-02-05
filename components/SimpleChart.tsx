@@ -32,6 +32,7 @@ const data = {
 };
 
 const options = {
+  // remove 'dots'
   pointRadius: 0,
   responsive: true,
     plugins: {
