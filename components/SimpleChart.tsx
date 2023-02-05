@@ -1,9 +1,9 @@
 "use client"
 import React, { useState } from 'react';
-import { Chart as ChartJS } from 'chart.js/auto'
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
-ChartJS.register(...registerables);
+ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
 
 
 const SimpleChart = () => {
@@ -14,7 +14,7 @@ const SimpleChart = () => {
     const substrateConcentration = [];
     const reactionRate = [];
 
-    for (var i = 0; i <= 100; i++) {
+    for (var i = 0; i <= 60; i+=10) {
     substrateConcentration.push(i);
     reactionRate.push(vMax * i / (km + i));
     }
@@ -23,7 +23,7 @@ const data = {
   labels: substrateConcentration,
   datasets: [
     {
-      label: 'Reaction rate',
+      label: 'Occupancy (%)',
       data: reactionRate,
       backgroundColor: 'rgba(255, 99, 132, 0.2)',
       borderColor: 'rgba(255, 99, 132, 1)',
@@ -34,26 +34,36 @@ const data = {
 };
 
 const options = {
+  responsive: true,
+    plugins: {
+      tooltip: {
+        mode: 'index',
+        intersect: false
+      },
+    },
   scales: {
-    xAxes: [
-      {
-        type: 'linear',
-        position: 'bottom',
-        scaleLabel: {
-          display: true,
-          labelString: 'Substrate Concentration',
-        },
+    x: {
+      title: {
+        display: true,
+        text: 'Drug Dose (mg)'
+      }
+    },
+    y: {
+      title: {
+        display: true,
+        text: 'Receptor Occupancy (%)'
+      }
+    },
+  },
+  tooltips: {
+    callbacks: {
+      label: (tooltipItem: any, data: any) => {
+        const dataset = data.datasets[tooltipItem.datasetIndex];
+        const index = tooltipItem.index;
+        return `Substrate Concentration: ${data.labels[index]} 
+                Reaction Rate: ${dataset.data[index]}`;
       },
-    ],
-    yAxes: [
-      {
-        type: 'linear',
-        scaleLabel: {
-          display: true,
-          labelString: 'Reaction Rate',
-        },
-      },
-    ],
+    },
   },
 };
 
@@ -64,16 +74,16 @@ const options = {
       <div>
         Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
       </div>
-      <span>Vmax: </span>
+      <strong>Vmax: </strong>
       {/* @ts-ignore */}
       <input type="number" placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(e.target.value)}/>
-      <span>Km:</span>
+      <strong>{' '}Km:</strong>
       {/* @ts-ignore */}
       <input placeholder='Km input' type="number" value={km} onChange={(e)=> setKm(e.target.value)}/>
       <br/><br/>
-      <div style={{maxHeight: '50rem'}}>
+      <div>
         {/* @ts-ignore */}
-        <Line data={data} options={options} />
+        <Line height={200} width={800} data={data} options={options} />
       </div>
     </div>
 }
