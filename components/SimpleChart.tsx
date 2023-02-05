@@ -66,6 +66,7 @@ const options = {
         <span>Km:</span>
         <input placeholder='Km input'  value={km} onChange={(e)=> setKm(Number(e.target.value))}/>
         <br/><br/>
+        {/* @ts-ignore */}
         <Line data={data} options={options} />
     </div>
 }
