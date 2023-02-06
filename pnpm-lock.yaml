@@ -7,6 +7,7 @@ specifiers:
   '@types/react': 18.0.27
   '@types/react-dom': 18.0.10
   chart.js: ^4.2.0
+  chartjs-plugin-annotation: ^2.1.2
   eslint: 8.33.0
   eslint-config-next: 13.1.6
   next: 13.1.6
@@ -21,6 +22,7 @@ dependencies:
   '@types/react': 18.0.27
   '@types/react-dom': 18.0.10
   chart.js: 4.2.0
+  chartjs-plugin-annotation: 2.1.2_chart.js@4.2.0
   eslint: 8.33.0
   eslint-config-next: 13.1.6_4vsywjlpuriuw3tl5oq6zy5a64
   next: 13.1.6_biqbaboplfbrettd7655fr4n2y
@@ -512,6 +514,14 @@ packages:
     engines: {pnpm: ^7.0.0}
     dependencies:
       '@kurkle/color': 0.3.2
+    dev: false
+
+  /chartjs-plugin-annotation/2.1.2_chart.js@4.2.0:
+    resolution: {integrity: sha512-kmEp2WtpogwnKKnDPO3iO3mVwvVGtmG5BkZVtAEZm5YzJ9CYxojjYEgk7OTrFbJ5vU098b84UeJRe8kRfNcq5g==}
+    peerDependencies:
+      chart.js: '>=3.7.0'
+    dependencies:
+      chart.js: 4.2.0
     dev: false
 
   /client-only/0.0.1:

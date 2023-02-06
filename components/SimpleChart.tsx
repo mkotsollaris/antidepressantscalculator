@@ -6,34 +6,63 @@ ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
 
 const SimpleChart = () => {
 
-    const [vMax, setVmax] = useState(83.98);
-    const [km, setKm] = useState(2.33);
-
-    const substrateConcentration = [];
-    const reactionRate = [];
-
-    for (var i = 0; i <= 100; i+=1) {
-      substrateConcentration.push(`${i}`);
-      reactionRate.push(vMax * i / (km + i));
+  const [vMax, setVmax] = useState(83.98);
+  const [km, setKm] = useState(2.33);
+  
+  const substrateConcentration = [];
+  const reactionRate = [];
+  
+  for (var i = 0; i <= 60; i += 1) {
+    substrateConcentration.push(`${i}`);
+    reactionRate.push(vMax * i / (km + i));
+  }
+  
+  const maxRate = reactionRate[60];
+  let minRate = 0;
+  
+  
+  function generateNumbers(x: any, n: any) {
+    const result = [];
+    for (let i = 0; i <=n; i++) {
+      result.push(i * x * 0.1);
     }
+    return result;
+  }
 
-const data = {
-  labels: substrateConcentration,
-  datasets: [
-    {
-      label: 'Occupancy (%)',
-      data: reactionRate,
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      borderColor: 'rgba(255, 99, 132, 1)',
-      borderWidth: 3,
-      fill: false,
-    },
-  ],
-};
+  
+  const step = (80.84 - 0) * 0.1;
+  const tenPercentReactionRatePoints = [];
+
+  for (let i = 0; i <= 10; i++) {
+    tenPercentReactionRatePoints.push(0 + step * i);
+  }
+  
+    const data = {
+      labels: substrateConcentration,
+      datasets: [
+        {
+          label: 'Occupancy (%)',
+          data: reactionRate,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 3,
+          fill: false,
+        },
+        {
+          label: 'POI',
+          data: tenPercentReactionRatePoints,
+          backgroundColor: 'blue',
+          borderColor: 'blue',
+          borderWidth: 3,
+          fill: false,
+        }
+      ],
+    };
+
 
 const options = {
   // remove 'dots'
-  pointRadius: 0,
+  // pointRadius: 0,
   responsive: true,
     plugins: {
       tooltip: {
