@@ -17,19 +17,38 @@ const SimpleChart = () => {
       reactionRate.push(vMax * i / (km + i));
     }
 
-const data = {
-  labels: substrateConcentration,
-  datasets: [
-    {
-      label: 'Occupancy (%)',
-      data: reactionRate,
-      backgroundColor: 'rgba(255, 99, 132, 0.2)',
-      borderColor: 'rgba(255, 99, 132, 1)',
-      borderWidth: 3,
-      fill: false,
-    },
-  ],
-};
+    const occupancyDifference = [];
+    occupancyDifference.push(reactionRate[0]);
+
+    for (var i = 10; i <= reactionRate.length; i+=10) {
+      occupancyDifference.push(reactionRate[i] - reactionRate[i - 10]);
+    }
+    
+    const data = {
+      labels: substrateConcentration.filter((_, i) => i % 10 === 0),
+      datasets: [
+        {
+          label: 'Occupancy (%)',
+          data: reactionRate,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 3,
+          fill: false,
+        },
+        {
+          label: 'Occupancy Difference',
+          data: occupancyDifference,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 3,
+          fill: false,
+        },
+      ],
+    };    
+
+    
+    
+    
 
 const options = {
   // remove 'dots'
