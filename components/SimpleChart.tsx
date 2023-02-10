@@ -11,7 +11,9 @@ const antiDepressantData = {
     targets: [
       {
         Striatum: {
-          maxDose: 60
+          maxDose: 60,
+          vMax: 83.98,
+          k: 2.33
         }
       }
     ]
@@ -19,25 +21,36 @@ const antiDepressantData = {
   Desvenlafaxine: {
     targets: [
       {
-        Striatum: {
-          maxDose: 140
-        },
         Amygdala: {
-          maxDose: 140
-        },
+          maxDose: 140,
+          vMax: 106.43,
+          k: 11.57
+        }},
+        {
         Midbrain: {
-          maxDose: 140
-        },
-        Thalamus: {
-          maxDose: 140
+          maxDose: 140,
+          vMax: 99.46,
+          k: 10.92
         }
-      }
+      },
+        {Striatum: {
+          maxDose: 140,
+          vMax: 100.22,
+          k: 16.11
+        }},
+        {Thalamus: {
+          maxDose: 140,
+          vMax: 100.11,
+          k: 21.17
+        }},
     ]
   },
   Duloxetine: {
     targets: [{
       Thalamus: {
-        maxDose: 60
+        maxDose: 60,
+        vMax: 90.75,
+        k: 6.27
       }
     }]
   },
@@ -45,23 +58,30 @@ const antiDepressantData = {
     targets: [
       {
         Caudate: {
-          maxDose: 30
+          maxDose: 30,
+          vMax: 75.35,
+          k: 0.66
         }
       },
       {
         Dorsal_Raphe_Nucleus: {
-          name: 'Dorsal Raphe Nucleus',
-          maxDose: 30
+          maxDose: 30,
+          vMax: 89.57,
+          k: 2.72
         }
       },
       {
         Putamen: {
-          maxDose: 30
+          maxDose: 30,
+          vMax: 69.32,
+          k: 1.22
         }
       },
       {
-        Escitalopram: {
-          maxDose: 30
+        Thalamus: {
+          maxDose: 30,
+          vMax: 78.67,
+          k: 2.10
         }
       }
     ]
@@ -70,7 +90,9 @@ const antiDepressantData = {
     targets: [
       {
         Striatum: {
-          maxDose: 60
+          maxDose: 60,
+          vMax: 86.12,
+          k: 1.89
         }
       }
     ]
@@ -78,7 +100,9 @@ const antiDepressantData = {
   Paroxetine: {
     targets: [{
       Striatum: {
-          maxDose: 60
+          maxDose: 60,
+          vMax: 97.14,
+          k: 5.60
       }
     }]
   },
@@ -86,7 +110,9 @@ const antiDepressantData = {
     targets: [
       {
         Striatum: {
-          maxDose: 200
+          maxDose: 200,
+          vMax: 92.01,
+          k: 7.72
         }
       }
     ]
@@ -95,7 +121,9 @@ const antiDepressantData = {
     targets: [
       {
         Striatum: {
-          maxDose: 200
+          maxDose: 200,
+          vMax: 90.07,
+          k: 5.80
         }
       }
     ]
@@ -104,7 +132,9 @@ const antiDepressantData = {
     targets: [
       {
         Raphe_Nuclei: {
-          maxDose: 60
+          maxDose: 60,
+          vMax: 102.24,
+          k: 4.68
         }
       }
     ]
@@ -123,6 +153,42 @@ function getMaxDose(key: string, targetValue: string) {
   for (let i = 0; i < targets.length; i++) {
     if (targets[i][targetValue]) {
       return targets[i][targetValue].maxDose;
+    }
+  }
+
+  return 'Target value not found for key';
+}
+
+function getK(key: string, targetValue: string) {
+  // @ts-ignore
+  if (!antiDepressantData[key]) {
+    return 'Key not found in antiDepressantData';
+  }
+
+  // @ts-ignore
+  const targets = antiDepressantData[key].targets;
+
+  for (let i = 0; i < targets.length; i++) {
+    if (targets[i][targetValue]) {
+      return targets[i][targetValue].k;
+    }
+  }
+
+  return 'Target value not found for key';
+}
+
+function getVmax(key: string, targetValue: string) {
+  // @ts-ignore
+  if (!antiDepressantData[key]) {
+    return 'Key not found in antiDepressantData';
+  }
+
+  // @ts-ignore
+  const targets = antiDepressantData[key].targets;
+
+  for (let i = 0; i < targets.length; i++) {
+    if (targets[i][targetValue]) {
+      return targets[i][targetValue].vMax;
     }
   }
 
@@ -163,13 +229,23 @@ const SimpleChart = () => {
     const [targets, setTargets] = useState(getTargets("Citalopram"))
 
     const handleDropdownChange = (e: any) => {
+      const firstTarget = getFirstTarget(e.target.value);
+      const newKM = getK(e.target.value, firstTarget)
+      const newVmax = getVmax(e.target.value, firstTarget)
       setSelectedAntiDepressant(e.target.value);
       setTargets(getTargets(e.target.value));
-      setSelectedTarget(getFirstTarget(e.target.value));
+      setSelectedTarget(firstTarget);
+      setKm(newKM)
+      setVmax(newVmax)
     }
 
     const handleTargetChange = (e: any) => {
+      const newTarget = e.target.value;
+      const newKM = getK(selectedAntiDepressant, newTarget)
+      const newVmax = getVmax(selectedAntiDepressant, newTarget)
       setSelectedTarget(e.target.value)
+      setKm(newKM)
+      setVmax(newVmax)
     }
 
     const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
@@ -241,14 +317,10 @@ const options = {
         Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
         The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review: <a href="https://www.nature.com/articles/s41380-021-01285-w#Sec7">reference</a>
       </h3>
-      <div style={{
-        display: 'flex'
-      }}>
-      <strong>Vmax: </strong>
-      <input type="number" placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(e.target.value)}/>
-      <strong>{' '}Km:</strong>
-      <input placeholder='Km input' type="number" value={km} onChange={(e)=> setKm(e.target.value)}/>
-      <select onChange={handleDropdownChange}>
+        <strong>Vmax: {vMax}</strong>
+        <br/>
+        <strong>{' '}Km: {km}</strong>
+        <div><select onChange={handleDropdownChange}>
         {antiDepressantOptions.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
       <select onChange={handleTargetChange}>
