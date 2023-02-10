@@ -44,10 +44,7 @@ const SimpleChart = () => {
           fill: false,
         },
       ],
-    };    
-
-    
-    
+    };
     
 
 const options = {
