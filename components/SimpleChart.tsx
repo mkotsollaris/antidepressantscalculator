@@ -1,18 +1,181 @@
+// @ts-nocheck
 import React, { useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
 ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
 
+
+const antiDepressantData = {
+  Citalopram: {
+    targets: [
+      {
+        Striatum: {
+          maxDose: 60
+        }
+      }
+    ]
+  },
+  Desvenlafaxine: {
+    targets: [
+      {
+        Striatum: {
+          maxDose: 140
+        },
+        Amygdala: {
+          maxDose: 140
+        },
+        Midbrain: {
+          maxDose: 140
+        },
+        Thalamus: {
+          maxDose: 140
+        }
+      }
+    ]
+  },
+  Duloxetine: {
+    targets: [{
+      Thalamus: {
+        maxDose: 60
+      }
+    }]
+  },
+  Escitalopram: {
+    targets: [
+      {
+        Caudate: {
+          maxDose: 30
+        }
+      },
+      {
+        Dorsal_Raphe_Nucleus: {
+          name: 'Dorsal Raphe Nucleus',
+          maxDose: 30
+        }
+      },
+      {
+        Putamen: {
+          maxDose: 30
+        }
+      },
+      {
+        Escitalopram: {
+          maxDose: 30
+        }
+      }
+    ]
+  },
+  Fluoxetine: {
+    targets: [
+      {
+        Striatum: {
+          maxDose: 60
+        }
+      }
+    ]
+  },
+  Paroxetine: {
+    targets: [{
+      Striatum: {
+          maxDose: 60
+      }
+    }]
+  },
+  Sertaline: {
+    targets: [
+      {
+        Striatum: {
+          maxDose: 200
+        }
+      }
+    ]
+  },
+  Venlafaxine_XR: {
+    targets: [
+      {
+        Striatum: {
+          maxDose: 200
+        }
+      }
+    ]
+  },
+  Vortioxetine: {
+    targets: [
+      {
+        Raphe_Nuclei: {
+          maxDose: 60
+        }
+      }
+    ]
+  }
+}
+
+function getMaxDose(key: string, targetValue: string) {
+  // @ts-ignore
+  if (!antiDepressantData[key]) {
+    return 'Key not found in antiDepressantData';
+  }
+
+  // @ts-ignore
+  const targets = antiDepressantData[key].targets;
+
+  for (let i = 0; i < targets.length; i++) {
+    if (targets[i][targetValue]) {
+      return targets[i][targetValue].maxDose;
+    }
+  }
+
+  return 'Target value not found for key';
+}
+
+function getFirstTarget(key: string) {
+  // @ts-ignore
+  if (!antiDepressantData[key]) {
+    return 'Key not found in antiDepressantData';
+  }
+
+  const targets = antiDepressantData[key].targets;
+  const firstTarget = Object.keys(targets[0])[0];
+
+  return firstTarget;
+}
+
+function getTargets(key: string) {
+  if (!antiDepressantData[key]) {
+    return 'Key not found in antiDepressantData';
+  }
+
+  const targets = antiDepressantData[key].targets;
+  const targetsArray = targets.map(target => Object.keys(target)[0]);
+
+  return targetsArray;
+}
+
 const SimpleChart = () => {
 
     const [vMax, setVmax] = useState(83.98);
     const [km, setKm] = useState(2.33);
-
     const substrateConcentration = [];
     const reactionRate = [];
+    const [selectedAntiDepressant, setSelectedAntiDepressant] = useState("Citalopram")
+    const [selectedTarget, setSelectedTarget] = useState("Striatum")
+    const [targets, setTargets] = useState(getTargets("Citalopram"))
 
-    for (var i = 0; i <= 100; i+=1) {
+    const handleDropdownChange = (e: any) => {
+      setSelectedAntiDepressant(e.target.value);
+      setTargets(getTargets(e.target.value));
+      setSelectedTarget(getFirstTarget(e.target.value));
+    }
+
+    const handleTargetChange = (e: any) => {
+      setSelectedTarget(e.target.value)
+    }
+
+    const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
+    const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
+
+    for (var i = 0; i <= maxDose; i+=1) {
       substrateConcentration.push(`${i}`);
       reactionRate.push(vMax * i / (km + i));
     }
@@ -48,7 +211,6 @@ const SimpleChart = () => {
     
 
 const options = {
-  // remove 'dots'
   pointRadius: 0,
   responsive: true,
     plugins: {
@@ -75,25 +237,26 @@ const options = {
 };
 
     return <div>
-      <div>
-        <h2><strong>Citalopram</strong> with Region of Interest <strong>Striatum</strong></h2>
-      </div>
-      <div>
+      <h3>
         Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
-      </div>
+        The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review: <a href="https://www.nature.com/articles/s41380-021-01285-w#Sec7">reference</a>
+      </h3>
       <div style={{
         display: 'flex'
       }}>
       <strong>Vmax: </strong>
-      {/* @ts-ignore */}
       <input type="number" placeholder='vmax input' value={vMax} onChange={(e)=> setVmax(e.target.value)}/>
       <strong>{' '}Km:</strong>
-      {/* @ts-ignore */}
       <input placeholder='Km input' type="number" value={km} onChange={(e)=> setKm(e.target.value)}/>
+      <select onChange={handleDropdownChange}>
+        {antiDepressantOptions.map(option => <option key={option} value={option}>{option}</option>)}
+      </select>
+      <select onChange={handleTargetChange}>
+        {targets.map(option => <option key={option} value={option}>{option}</option>)}
+      </select>
       </div>
       <br/><br/>
       <div>
-        {/* @ts-ignore */}
         <Line height={600} width={800} data={data} options={options} />
       </div>
     </div>
