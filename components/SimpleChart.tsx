@@ -5,7 +5,6 @@ import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
 ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
 
-
 const antiDepressantData = {
   Citalopram: {
     targets: [
@@ -218,15 +217,30 @@ function getTargets(key: string) {
   return targetsArray;
 }
 
+const reductionApproachesOptions = {
+  Linear: [2.5, 5, 10 ,20],
+  Microtapering: [],
+  Minitapering: [5, 10, 15, 20]
+};
+
+function getReductionApproachOptions(key: string) {
+  return reductionApproachesOptions[key];
+}
+
+function getApproachOptions() {
+  return Object.keys(reductionApproachesOptions);
+}
+
 const SimpleChart = () => {
 
-    const [vMax, setVmax] = useState(83.98);
     const [km, setKm] = useState(2.33);
+    const [vMax, setVmax] = useState(83.98);
     const substrateConcentration = [];
     const reactionRate = [];
     const [selectedAntiDepressant, setSelectedAntiDepressant] = useState("Citalopram")
     const [selectedTarget, setSelectedTarget] = useState("Striatum")
     const [targets, setTargets] = useState(getTargets("Citalopram"))
+    const [currApproach, setCurrApproach] = useState('Linear')
 
     const handleDropdownChange = (e: any) => {
       const firstTarget = getFirstTarget(e.target.value);
@@ -253,18 +267,19 @@ const SimpleChart = () => {
 
     for (var i = 0; i <= maxDose; i+=1) {
       substrateConcentration.push(`${i}`);
-      reactionRate.push(vMax * i / (km + i));
+      reactionRate.push((vMax * i) / (km + i));
     }
 
     const occupancyDifference = [];
     occupancyDifference.push(reactionRate[0]);
 
-    for (var i = 10; i <= reactionRate.length; i+=10) {
-      occupancyDifference.push(reactionRate[i] - reactionRate[i - 10]);
+    for (var i = 10; i < reactionRate.length+10; i+=1) {
+      if(i>=reactionRate.length) occupancyDifference.push(reactionRate[reactionRate.length-1] - reactionRate[reactionRate.length-1 - 10])
+      else occupancyDifference.push(reactionRate[i] - reactionRate[i - 10]);
     }
     
     const data = {
-      labels: substrateConcentration.filter((_, i) => i % 10 === 0),
+      labels: substrateConcentration,
       datasets: [
         {
           label: 'Occupancy (%)',
@@ -274,14 +289,15 @@ const SimpleChart = () => {
           borderWidth: 3,
           fill: false,
         },
-        {
-          label: 'Occupancy Difference',
-          data: occupancyDifference,
-          backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          borderColor: 'rgba(54, 162, 235, 1)',
-          borderWidth: 3,
-          fill: false,
-        },
+        // need to fix it
+          {
+            label: 'Occupancy Difference',
+            data: occupancyDifference,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 3,
+            fill: 'none',
+          },
       ],
     };
     
@@ -326,6 +342,13 @@ const options = {
       <select onChange={handleTargetChange}>
         {targets.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
+      <br/>
+      {/* <select>
+        {getApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
+      </select>
+      <select>
+        {getReductionApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
+      </select> */}
       </div>
       <br/><br/>
       <div>
