@@ -217,91 +217,6 @@ function getTargets(key: string) {
   return targetsArray;
 }
 
-const reductionApproachesOptions = {
-  Linear: [2.5, 5, 10 ,20],
-  Microtapering: [],
-  Minitapering: [5, 10, 15, 20]
-};
-
-function getReductionApproachOptions(key: string) {
-  return reductionApproachesOptions[key];
-}
-
-function getApproachOptions() {
-  return Object.keys(reductionApproachesOptions);
-}
-
-const SimpleChart = () => {
-
-    const [km, setKm] = useState(2.33);
-    const [vMax, setVmax] = useState(83.98);
-    const substrateConcentration = [];
-    const reactionRate = [];
-    const [selectedAntiDepressant, setSelectedAntiDepressant] = useState("Citalopram")
-    const [selectedTarget, setSelectedTarget] = useState("Striatum")
-    const [targets, setTargets] = useState(getTargets("Citalopram"))
-    const [currApproach, setCurrApproach] = useState('Linear')
-
-    const handleDropdownChange = (e: any) => {
-      const firstTarget = getFirstTarget(e.target.value);
-      const newKM = getK(e.target.value, firstTarget)
-      const newVmax = getVmax(e.target.value, firstTarget)
-      setSelectedAntiDepressant(e.target.value);
-      setTargets(getTargets(e.target.value));
-      setSelectedTarget(firstTarget);
-      setKm(newKM)
-      setVmax(newVmax)
-    }
-
-    const handleTargetChange = (e: any) => {
-      const newTarget = e.target.value;
-      const newKM = getK(selectedAntiDepressant, newTarget)
-      const newVmax = getVmax(selectedAntiDepressant, newTarget)
-      setSelectedTarget(e.target.value)
-      setKm(newKM)
-      setVmax(newVmax)
-    }
-
-    const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
-    const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
-
-    for (var i = 0; i <= maxDose; i+=1) {
-      substrateConcentration.push(`${i}`);
-      reactionRate.push((vMax * i) / (km + i));
-    }
-
-    const occupancyDifference = [];
-    occupancyDifference.push(reactionRate[0]);
-
-    for (var i = 10; i < reactionRate.length+10; i+=1) {
-      if(i>=reactionRate.length) occupancyDifference.push(reactionRate[reactionRate.length-1] - reactionRate[reactionRate.length-1 - 10])
-      else occupancyDifference.push(reactionRate[i] - reactionRate[i - 10]);
-    }
-    
-    const data = {
-      labels: substrateConcentration,
-      datasets: [
-        {
-          label: 'Occupancy (%)',
-          data: reactionRate,
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
-          borderWidth: 3,
-          fill: false,
-        },
-        // need to fix it
-          {
-            label: 'Occupancy Difference',
-            data: occupancyDifference,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 3,
-            fill: 'none',
-          },
-      ],
-    };
-    
-
 const options = {
   pointRadius: 0,
   responsive: true,
@@ -328,6 +243,105 @@ const options = {
     },
 };
 
+const reductionApproachesOptions = {
+  Linear: [2, 5, 10 ,20],
+  // Microtapering: [],
+  // Minitapering: [5, 10, 15, 20]
+};
+
+function getReductionApproachOptions(key: string) {
+  return reductionApproachesOptions[key];
+}
+
+function getApproachOptions() {
+  return Object.keys(reductionApproachesOptions);
+}
+
+function computeOccupancyDifference(reactionRate, stepReduction) {
+  const occupancyDifference = [];
+  occupancyDifference.push(reactionRate[0]);
+  for (let i = parseInt(stepReduction); i < reactionRate.length+stepReduction; i+=1) {
+    if(i>=reactionRate.length) occupancyDifference.push(reactionRate[reactionRate.length-1] - reactionRate[reactionRate.length-1 - stepReduction])
+    else occupancyDifference.push(reactionRate[i] - reactionRate[i - stepReduction]);
+  }
+  return occupancyDifference
+}
+
+const SimpleChart = () => {
+
+    const [km, setKm] = useState(2.33);
+    const [vMax, setVmax] = useState(83.98);
+    const substrateConcentration = [];
+    const reactionRate = [];
+    const [selectedAntiDepressant, setSelectedAntiDepressant] = useState("Citalopram")
+    const [selectedTarget, setSelectedTarget] = useState("Striatum")
+    const [targets, setTargets] = useState(getTargets("Citalopram"))
+    const [currApproach, setCurrApproach] = useState('Linear')
+    const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
+    const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
+    for (var i = 0; i <= maxDose; i+=1) {
+      substrateConcentration.push(`${i}`);
+      reactionRate.push((vMax * i) / (km + i));
+    }
+    const [occupancyDifference, setOccupancyDifference] = useState(computeOccupancyDifference(reactionRate, 10));
+
+    const handleDropdownChange = (e: any) => {
+      const firstTarget = getFirstTarget(e.target.value);
+      const newKM = getK(e.target.value, firstTarget)
+      const newVmax = getVmax(e.target.value, firstTarget)
+      setSelectedAntiDepressant(e.target.value);
+      setTargets(getTargets(e.target.value));
+      setSelectedTarget(firstTarget);
+      setKm(newKM)
+      setVmax(newVmax)
+    }
+
+    const handleTargetChange = (e: any) => {
+      const newTarget = e.target.value;
+      const newKM = getK(selectedAntiDepressant, newTarget)
+      const newVmax = getVmax(selectedAntiDepressant, newTarget)
+
+      setSelectedTarget(e.target.value)
+      setKm(newKM)
+      setVmax(newVmax)
+    }
+
+    const handleApproachChange = (e: any) => {
+      const newApproach = e.target.value;
+      setCurrApproach(newApproach)
+    }
+
+    const handleReductionChange = (e: any) => {
+      const newReduction = e.target.value as number;
+      const newOccupancyDifference = computeOccupancyDifference(reactionRate, newReduction);
+      setOccupancyDifference(newOccupancyDifference);
+    }
+
+    
+    const data = {
+      labels: substrateConcentration,
+      datasets: [
+        {
+          label: 'Occupancy (%)',
+          data: reactionRate,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 3,
+          fill: false,
+        },
+        // need to fix it
+          {
+            label: 'Occupancy Difference',
+            data: occupancyDifference,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 3,
+            fill: 'none',
+          },
+      ],
+    };
+    
+
     return <div>
       <h3>
         Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
@@ -343,12 +357,12 @@ const options = {
         {targets.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
       <br/>
-      {/* <select>
+      <select onChange={handleApproachChange}>
         {getApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
       </select>
-      <select>
+      <select onChange={handleReductionChange}>
         {getReductionApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
-      </select> */}
+      </select>
       </div>
       <br/><br/>
       <div>
