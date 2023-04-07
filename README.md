@@ -1,4 +1,4 @@
-# antidepressantscalculator
+# Anti Depressants Calculator
 
 Anti depressant calculator aims to provide an easy way for prefessional practisionares to detect doses that could help with withdrawal side-effects. 
 
