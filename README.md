@@ -4,7 +4,7 @@ The Anti-Depressant Dosage Calculator is a user-friendly tool designed to assist
 
 ## Background
 
-Our dosage calculations are primarily based on the comprehensive research presented in the paper, "The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review." This authoritative resource offers valuable insights into the connections between dosage levels and the impact on serotonin transporter occupancy, which is crucial in managing antidepressant withdrawal symptoms.
+Our dosage calculations are primarily based on the comprehensive research presented in the paper, "The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review." ([ref](https://www.nature.com/articles/s41380-021-01285-w#data-availability)) This authoritative resource offers valuable insights into the connections between dosage levels and the impact on serotonin transporter occupancy, which is crucial in managing antidepressant withdrawal symptoms.
 
 ## Key Features
 
