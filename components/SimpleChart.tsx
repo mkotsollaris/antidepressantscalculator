@@ -140,6 +140,24 @@ const antiDepressantData = {
   }
 }
 
+function getDoseForOccupancyIncrements(key, targetValue, increment) {
+  const km = getK(key, targetValue);
+  const vMax = getVmax(key, targetValue);
+  const doses = [];
+  const maxPercentage = 100;
+
+  for (let occupancy = increment; occupancy <= maxPercentage; occupancy += increment) {
+    const dose = ((km * occupancy) / (vMax - occupancy)).toFixed(2);
+    if (dose >= 0 && dose < vMax) {
+      doses.push(parseFloat(dose));
+    } else {
+      break;
+    }
+  }
+
+  return doses;
+}
+
 function getMaxDose(key: string, targetValue: string) {
   // @ts-ignore
   if (!antiDepressantData[key]) {
@@ -220,28 +238,32 @@ function getTargets(key: string) {
 const options = {
   pointRadius: 0,
   responsive: true,
-    plugins: {
-      tooltip: {
-        mode: 'index',
-        intersect: false
+  plugins: {
+    tooltip: {
+      mode: 'index',
+      intersect: false,
+    },
+  },
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      type: 'linear', // Add this line to change the x-axis type to 'linear'
+      display: true,
+      position: 'bottom',
+      title: {
+        display: true,
+        text: 'Drug Dose (mg)',
       },
     },
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'Drug Dose (mg)'
-        }
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'Receptor Occupancy (%)'
-        }
+    y: {
+      title: {
+        display: true,
+        text: 'Receptor Occupancy (%)',
       },
     },
+  },
 };
+
 
 const reductionApproachesOptions = {
   Linear: [2, 5, 10 ,20],
@@ -279,11 +301,19 @@ const SimpleChart = () => {
     const [currApproach, setCurrApproach] = useState('Linear')
     const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
     const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
+  
+    const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, 10)
+    const occupancyIncrements = reductionValues.map((value, index) => ({
+      x: parseFloat(value),
+      y: (index + 1) * 10,
+    }));
+
     for (var i = 0; i <= maxDose; i+=1) {
       substrateConcentration.push(`${i}`);
       reactionRate.push((vMax * i) / (km + i));
     }
     const [occupancyDifference, setOccupancyDifference] = useState(computeOccupancyDifference(reactionRate, 10));
+
 
     const handleDropdownChange = (e: any) => {
       const firstTarget = getFirstTarget(e.target.value);
@@ -317,6 +347,17 @@ const SimpleChart = () => {
       setOccupancyDifference(newOccupancyDifference);
     }
 
+    const specifiedPoints = [
+      { x: 0.31, y: 10 },
+      { x: 0.73, y: 20 },
+      { x: 1.29, y: 30 },
+      { x: 2.12, y: 40 },
+      { x: 3.43, y: 50 },
+      { x: 5.83, y: 60 },
+      { x: 11.67, y: 70 },
+      { x: 46.83, y: 80 },
+    ];
+
     
     const data = {
       labels: substrateConcentration,
@@ -329,7 +370,6 @@ const SimpleChart = () => {
           borderWidth: 3,
           fill: false,
         },
-        // need to fix it
           {
             label: 'Occupancy Difference',
             data: occupancyDifference,
@@ -337,6 +377,16 @@ const SimpleChart = () => {
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 3,
             fill: 'none',
+          },
+          {
+            label: 'Increment Point',
+            data: occupancyIncrements,
+            backgroundColor: 'rgba(75, 192, 192, 1)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 3,
+            fill: false,
+            pointRadius: 4,
+            pointHoverRadius: 6,
           },
       ],
     };
@@ -363,6 +413,16 @@ const SimpleChart = () => {
       <select onChange={handleReductionChange}>
         {getReductionApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
       </select>
+      </div>
+      <div>
+      <h4>10% Y-Axis increment points</h4>
+      <ul>
+        {reductionValues.map((value, index) => (
+          <li key={index}>
+            {((index + 1) * 10).toString()}%: {value} mg
+          </li>
+        ))}
+      </ul>
       </div>
       <br/><br/>
       <div>
