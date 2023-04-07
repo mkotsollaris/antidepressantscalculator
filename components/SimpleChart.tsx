@@ -301,11 +301,12 @@ const SimpleChart = () => {
     const [currApproach, setCurrApproach] = useState('Linear')
     const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
     const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
+    const [percentagePoint, setPercentagePoint] = useState(10);
   
-    const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, 10)
+    const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
     const occupancyIncrements = reductionValues.map((value, index) => ({
       x: parseFloat(value),
-      y: (index + 1) * 10,
+      y: (index + 1) * percentagePoint,
     }));
 
     for (var i = 0; i <= maxDose; i+=1) {
@@ -324,6 +325,11 @@ const SimpleChart = () => {
       setSelectedTarget(firstTarget);
       setKm(newKM)
       setVmax(newVmax)
+    }
+
+    const handlePercentagePoint = (e: any) => {
+      const newPercentage = parseInt(e.target.value);
+      setPercentagePoint(newPercentage);
     }
 
     const handleTargetChange = (e: any) => {
@@ -346,17 +352,6 @@ const SimpleChart = () => {
       const newOccupancyDifference = computeOccupancyDifference(reactionRate, newReduction);
       setOccupancyDifference(newOccupancyDifference);
     }
-
-    const specifiedPoints = [
-      { x: 0.31, y: 10 },
-      { x: 0.73, y: 20 },
-      { x: 1.29, y: 30 },
-      { x: 2.12, y: 40 },
-      { x: 3.43, y: 50 },
-      { x: 5.83, y: 60 },
-      { x: 11.67, y: 70 },
-      { x: 46.83, y: 80 },
-    ];
 
     
     const data = {
@@ -400,14 +395,15 @@ const SimpleChart = () => {
         <strong>Vmax: {vMax}</strong>
         <br/>
         <strong>{' '}Km: {km}</strong>
-        <div><select onChange={handleDropdownChange}>
+        <div>
+        <strong>Drug & Brain Area: </strong> <select onChange={handleDropdownChange}>
         {antiDepressantOptions.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
       <select onChange={handleTargetChange}>
         {targets.map(option => <option key={option} value={option}>{option}</option>)}
       </select>
       <br/>
-      <select onChange={handleApproachChange}>
+      <strong>Approach: </strong> <select onChange={handleApproachChange}>
         {getApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
       </select>
       <select onChange={handleReductionChange}>
@@ -415,14 +411,22 @@ const SimpleChart = () => {
       </select>
       </div>
       <div>
-      <h4>10% Y-Axis increment points</h4>
-      <ul>
+      <strong>Incerment Point % (Y Axis)</strong>:{' '} 
+      <select onChange={handlePercentagePoint}>
+        <option selected={percentagePoint===5} key={5} value={5}>5</option>
+        <option selected={percentagePoint===10} key={10} value={10}>10</option>
+        <option selected={percentagePoint===20} key={20} value={20}>20</option>
+      </select>
+      </div>
+      <div>
+      <h4>{percentagePoint}% Y-Axis increment points</h4>
+      <ol>
         {reductionValues.map((value, index) => (
           <li key={index}>
-            {((index + 1) * 10).toString()}%: {value} mg
+            {value} mg
           </li>
         ))}
-      </ul>
+      </ol>
       </div>
       <br/><br/>
       <div>
