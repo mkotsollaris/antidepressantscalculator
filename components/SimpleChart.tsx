@@ -1,8 +1,9 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
+
 ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
 
 const antiDepressantData = {
@@ -302,6 +303,10 @@ const SimpleChart = () => {
     const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
     const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
     const [percentagePoint, setPercentagePoint] = useState(10);
+
+    useEffect(() => {
+      setOccupancyDifference(computeOccupancyDifference(reactionRate, percentagePoint));
+    }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint]);
   
     const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
     const occupancyIncrements = reductionValues.map((value, index) => ({
