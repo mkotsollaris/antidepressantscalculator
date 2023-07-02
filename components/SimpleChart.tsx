@@ -429,6 +429,9 @@ const SimpleChart = () => {
       <div>
       <h4>{percentagePoint}% Y-Axis increment points</h4>
       <ol>
+        <li key={Math.random()}>
+            {maxDose} mg
+          </li>
         {reductionValues.reverse().map((value, index) => (
           <li key={index}>
             {value} mg
