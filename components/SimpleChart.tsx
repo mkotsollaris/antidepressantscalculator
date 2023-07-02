@@ -155,7 +155,8 @@ function getDoseForOccupancyIncrements(key, targetValue, increment) {
       break;
     }
   }
-
+  // need this to include vMax
+  // doses.push(vMax)
   return doses;
 }
 
@@ -309,6 +310,7 @@ const SimpleChart = () => {
     }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint]);
   
     const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
+    
     const occupancyIncrements = reductionValues.map((value, index) => ({
       x: parseFloat(value),
       y: (index + 1) * percentagePoint,
@@ -365,19 +367,19 @@ const SimpleChart = () => {
         {
           label: 'Occupancy (%)',
           data: reactionRate,
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(0, 0, 0, 1)',
+          borderColor: 'rgba(0, 0, 0, 1)',
           borderWidth: 3,
           fill: false,
         },
-          {
-            label: 'Occupancy Difference',
-            data: occupancyDifference,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 3,
-            fill: 'none',
-          },
+          // {
+          //   label: 'Occupancy Difference',
+          //   data: occupancyDifference,
+          //   backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          //   borderColor: 'rgba(54, 162, 235, 1)',
+          //   borderWidth: 3,
+          //   fill: 'none',
+          // },
           {
             label: 'Increment Point',
             data: occupancyIncrements,
@@ -387,6 +389,7 @@ const SimpleChart = () => {
             fill: false,
             pointRadius: 4,
             pointHoverRadius: 6,
+            showLine: false
           },
       ],
     };
@@ -426,7 +429,7 @@ const SimpleChart = () => {
       <div>
       <h4>{percentagePoint}% Y-Axis increment points</h4>
       <ol>
-        {reductionValues.map((value, index) => (
+        {reductionValues.reverse().map((value, index) => (
           <li key={index}>
             {value} mg
           </li>
