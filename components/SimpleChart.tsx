@@ -304,7 +304,10 @@ const SimpleChart = () => {
     const antiDepressantOptions = Object.keys(antiDepressantData).map(e => e)
     const maxDose = getMaxDose(selectedAntiDepressant, selectedTarget);
     const [percentagePoint, setPercentagePoint] = useState(10);
-
+    const [startingPoint, setStartingPoint] = useState(undefined);
+    const [reductionRate, setReductionRate] = useState(10);
+    const [reductionPreference, setReductionPreference] = useState('relative');
+    
     useEffect(() => {
       setOccupancyDifference(computeOccupancyDifference(reactionRate, percentagePoint));
     }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint]);
@@ -337,6 +340,20 @@ const SimpleChart = () => {
     const handlePercentagePoint = (e: any) => {
       const newPercentage = parseInt(e.target.value);
       setPercentagePoint(newPercentage);
+    }
+    const handleStartingPoint = (e: any) => {
+      const newStartingPoint = parseInt(e.target.value);
+      setStartingPoint(newStartingPoint);
+    }
+
+    const handleReductionRate = (e: any) => {
+      const newReductionRate = parseInt(e.target.value);
+      setReductionRate(newReductionRate)
+    }
+
+    const handleReductionPreference = (e: any) => {
+      const newReductionPreference = parseInt(e.target.value);
+      setReductionPreference(newReductionPreference)
     }
 
     const handleTargetChange = (e: any) => {
@@ -400,9 +417,6 @@ const SimpleChart = () => {
         Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
         The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review: <a href="https://www.nature.com/articles/s41380-021-01285-w#Sec7">reference</a>
       </h3>
-        <strong>Vmax: {vMax}</strong>
-        <br/>
-        <strong>{' '}Km: {km}</strong>
         <div>
         <strong>Drug & Brain Area: </strong> <select onChange={handleDropdownChange}>
         {antiDepressantOptions.map(option => <option key={option} value={option}>{option}</option>)}
@@ -427,7 +441,30 @@ const SimpleChart = () => {
       </select>
       </div>
       <div>
-      <h4>{percentagePoint}% Y-Axis increment points</h4>
+      <strong>Starting Point</strong>:{' '}
+      <input onChange={handleStartingPoint}/>
+      </div>
+      <div>
+      <strong>Occupancy Reduction (%)</strong>:{' '}
+        <select onChange={handleReductionRate}>
+          <option selected={percentagePoint===5} key={5} value={5}>5</option>
+          <option selected={percentagePoint===10} key={10} value={10}>10</option>
+          <option selected={percentagePoint===20} key={20} value={20}>20</option>
+        </select>
+      </div>
+      <div>
+      <strong>Reduction Preference</strong>:{' '}
+        <select onChange={handleReductionPreference}>
+          <option selected={percentagePoint==='Relative'} key={'Relative'} value={'Relative'}>Relative</option>
+          <option selected={percentagePoint==='Absolute'} key={'Absolute'} value={'Absolute'}>Absolute</option>
+        </select>
+      </div>
+      <strong>Vmax: {vMax}</strong>
+      <br/>
+      <strong>{' '}Km: {km}</strong>
+     
+      <div>
+      <h4>{percentagePoint}% Y-Axis decrement points</h4>
       <ol>
         <li key={Math.random()}>
             {maxDose} mg
