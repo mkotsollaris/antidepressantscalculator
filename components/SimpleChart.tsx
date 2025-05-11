@@ -480,6 +480,35 @@ const SimpleChart = () => {
       <div>
         <Line height={600} width={800} data={data} options={options} />
       </div>
+      {/* Hyperbolic Tapering Schedule Table */}
+      <div style={{ marginTop: '2rem' }}>
+        <h4>Hyperbolic Tapering Schedule</h4>
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead>
+            <tr>
+              <th style={{ border: '1px solid #ccc', padding: '8px' }}>Step</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px' }}>Dose (mg)</th>
+              <th style={{ border: '1px solid #ccc', padding: '8px' }}>Occupancy (%)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Show max dose as first row */}
+            <tr>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>Starting Dose</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{maxDose}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * maxDose) / (km + maxDose)).toFixed(2)}</td>
+            </tr>
+            {/* Show each reduction step */}
+            {reductionValues.slice().reverse().map((dose, idx) => (
+              <tr key={idx + 1}>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{idx + 1}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{dose}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * dose) / (km + dose)).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
 }
 
