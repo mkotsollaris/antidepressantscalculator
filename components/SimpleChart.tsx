@@ -315,11 +315,39 @@ const SimpleChart = () => {
       setOccupancyDifference(computeOccupancyDifference(reactionRate, percentagePoint));
     }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint, startingPoint]);
   
-    // Calculate reduction values based on effectiveMaxDose
-    const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
-      .filter(value => value <= effectiveMaxDose);
+    // Calculate relative reduction values
+    const getRelativeReductionValues = () => {
+      if (!startingPoint) return [];
+      const values = [];
+      const startDose = startingPoint;
+      const startOccupancy = (vMax * startDose) / (km + startDose); // Calculate initial occupancy
+      const reductionAmount = startOccupancy * (reductionRate / 100); // Calculate reduction amount based on starting occupancy
+      
+      let currentDose = startDose;
+      let currentOccupancy = startOccupancy;
+      
+      while (currentDose > 0.1) { // Stop when dose is very small
+        values.push({
+          dose: currentDose,
+          occupancy: currentOccupancy
+        });
+        currentOccupancy = currentOccupancy - reductionAmount; // Subtract the same amount each time
+        // Calculate the corresponding dose for the new occupancy
+        currentDose = (km * currentOccupancy) / (vMax - currentOccupancy);
+      }
+      return values;
+    };
+
+    // Calculate absolute reduction values
+    const getAbsoluteReductionValues = () => {
+      return getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
+        .filter(value => value <= effectiveMaxDose);
+    };
+
+    const relativeValues = getRelativeReductionValues();
+    const absoluteValues = getAbsoluteReductionValues();
     
-    const occupancyIncrements = reductionValues.map((value, index) => ({
+    const occupancyIncrements = absoluteValues.map((value, index) => ({
       x: parseFloat(value),
       y: (index + 1) * percentagePoint,
     }));
@@ -473,17 +501,35 @@ const SimpleChart = () => {
       <strong>{' '}Km: {km}</strong>
      
       <div>
-      <h4>{percentagePoint}% Y-Axis decrement points</h4>
-      <ol>
-        <li key={Math.random()}>
-            {effectiveMaxDose} mg
-          </li>
-        {reductionValues.reverse().map((value, index) => (
-          <li key={index}>
-            {value} mg
-          </li>
-        ))}
-      </ol>
+      <h4>Y-Axis decrement points</h4>
+      <div style={{ display: 'flex', gap: '2rem' }}>
+        <div>
+          <h5>Relative Reduction ({reductionRate}%)</h5>
+          <ol>
+            <li key="relative-start">
+              {effectiveMaxDose} mg ({(vMax * effectiveMaxDose) / (km + effectiveMaxDose).toFixed(2)}%)
+            </li>
+            {relativeValues.slice(1).map((value, index) => (
+              <li key={`relative-${index}`}>
+                {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div>
+          <h5>Absolute Reduction ({percentagePoint}%)</h5>
+          <ol>
+            <li key="absolute-start">
+              {effectiveMaxDose} mg
+            </li>
+            {absoluteValues.reverse().map((value, index) => (
+              <li key={`absolute-${index}`}>
+                {value.toFixed(2)} mg
+              </li>
+            ))}
+          </ol>
+        </div>
+      </div>
       </div>
       <br/><br/>
       <div>
@@ -508,7 +554,7 @@ const SimpleChart = () => {
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}</td>
             </tr>
             {/* Show each reduction step */}
-            {reductionValues.slice().reverse().map((dose, idx) => (
+            {absoluteValues.slice().reverse().map((dose, idx) => (
               <tr key={idx + 1}>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{idx + 1}</td>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{dose}</td>
