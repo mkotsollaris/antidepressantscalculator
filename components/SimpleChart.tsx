@@ -499,14 +499,6 @@ const SimpleChart = () => {
       </select>
       </div>
       <div>
-      <strong>Incerment Point % (Y Axis)</strong>:{' '} 
-      <select onChange={handlePercentagePoint}>
-        <option selected={percentagePoint===5} key={5} value={5}>5</option>
-        <option selected={percentagePoint===10} key={10} value={10}>10</option>
-        <option selected={percentagePoint===20} key={20} value={20}>20</option>
-      </select>
-      </div>
-      <div>
       <strong>Starting Point</strong>:{' '}
       <input type="number" min="0" max={maxDose} onChange={handleStartingPoint} placeholder={`Max: ${maxDose}mg`}/>
       </div>
