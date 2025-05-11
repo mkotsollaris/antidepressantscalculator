@@ -478,112 +478,375 @@ const SimpleChart = () => {
     };
     
 
-    return <div>
-      <h3>
-        Graph is based on Michaelis-Menten equation: <strong>V = Vmax * [S] / (Km + [S])</strong> <br/><br/>
-        The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review: <a href="https://www.nature.com/articles/s41380-021-01285-w#Sec7">reference</a>
-      </h3>
-        <div>
-        <strong>Drug & Brain Area: </strong> <select onChange={handleDropdownChange}>
-        {antiDepressantOptions.map(option => <option key={option} value={option}>{option}</option>)}
-      </select>
-      <select onChange={handleTargetChange}>
-        {targets.map(option => <option key={option} value={option}>{option}</option>)}
-      </select>
-      <br/>
-      <strong>Approach: </strong> <select onChange={handleApproachChange}>
-        {getApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
-      </select>
-      <select onChange={handleReductionChange}>
-        {getReductionApproachOptions(currApproach).map(option => <option key={option} value={option}>{option}</option>)}
-      </select>
-      </div>
-      <div>
-      <strong>Starting Point</strong>:{' '}
-      <input type="number" min="0" max={maxDose} onChange={handleStartingPoint} placeholder={`Max: ${maxDose}mg`}/>
-      </div>
-      <div>
-      <strong>Occupancy Reduction (%)</strong>:{' '}
-        <select onChange={handleReductionRate}>
-          <option selected={percentagePoint===5} key={5} value={5}>5</option>
-          <option selected={percentagePoint===10} key={10} value={10}>10</option>
-          <option selected={percentagePoint===20} key={20} value={20}>20</option>
-        </select>
-      </div>
-      <div>
-      <strong>Reduction Preference</strong>:{' '}
-        <select onChange={handleReductionPreference}>
-          <option selected={percentagePoint==='Relative'} key={'Relative'} value={'Relative'}>Relative</option>
-          <option selected={percentagePoint==='Absolute'} key={'Absolute'} value={'Absolute'}>Absolute</option>
-        </select>
-      </div>
-      <strong>Vmax: {vMax}</strong>
-      <br/>
-      <strong>{' '}Km: {km}</strong>
-     
-      <div>
-      <h4>Y-Axis decrement points</h4>
-      <div style={{ display: 'flex', gap: '2rem' }}>
-        <div>
-          <h5>Relative Reduction ({reductionRate}%)</h5>
-          <ol>
-            <li key="relative-start">
-              {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
-            </li>
-            {relativeValues.slice(1).map((value, index) => (
-              <li key={`relative-${index}`}>
-                {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
-              </li>
-            ))}
-          </ol>
-        </div>
-        <div>
-          <h5>Absolute Reduction ({reductionRate}%)</h5>
-          <ol>
-            <li key="absolute-start">
-              {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
-            </li>
-            {absoluteValues.slice(1).map((value, index) => (
-              <li key={`absolute-${index}`}>
-                {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
-              </li>
-            ))}
-          </ol>
+    return <div style={{
+      maxWidth: '1200px',
+      margin: '0 auto',
+      padding: '2rem',
+      fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+    }}>
+      <div style={{
+        backgroundColor: '#f8f9fa',
+        padding: '2rem',
+        borderRadius: '12px',
+        marginBottom: '2rem',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h1 style={{
+          fontSize: '2rem',
+          color: '#2c3e50',
+          marginBottom: '1rem',
+          fontWeight: '600',
+          letterSpacing: '-0.5px'
+        }}>
+          Antidepressant Hyperbolic Calculator
+        </h1>
+        
+        <div style={{
+          fontSize: '1.1rem',
+          color: '#666',
+          marginBottom: '1.5rem',
+          lineHeight: '1.6'
+        }}>
+          Calculate and visualize the relationship between drug dose and receptor occupancy.
         </div>
       </div>
+
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '2rem',
+        marginBottom: '2rem'
+      }}>
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '1.5rem',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <h4 style={{ color: '#2c3e50', marginBottom: '1rem' }}>Drug & Brain Area</h4>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <select 
+              onChange={handleDropdownChange}
+              style={{
+                padding: '0.5rem',
+                borderRadius: '4px',
+                border: '1px solid #ddd',
+                flex: '1',
+                minWidth: '200px'
+              }}>
+              {antiDepressantOptions.map(option => 
+                <option key={option} value={option}>{option}</option>
+              )}
+            </select>
+            <select 
+              onChange={handleTargetChange}
+              style={{
+                padding: '0.5rem',
+                borderRadius: '4px',
+                border: '1px solid #ddd',
+                flex: '1',
+                minWidth: '200px'
+              }}>
+              {targets.map(option => 
+                <option key={option} value={option}>{option}</option>
+              )}
+            </select>
+          </div>
+        </div>
+
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '1.5rem',
+          borderRadius: '8px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <h4 style={{ color: '#2c3e50', marginBottom: '1rem' }}>Reduction Settings</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#666' }}>
+                Starting Dose
+              </label>
+              <input 
+                type="number" 
+                min="0" 
+                max={maxDose} 
+                onChange={handleStartingPoint} 
+                placeholder={`Max: ${maxDose}mg`}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd'
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#666' }}>
+                Occupancy Reduction (%)
+              </label>
+              <select 
+                onChange={handleReductionRate}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd'
+                }}>
+                <option selected={percentagePoint===5} key={5} value={5}>5%</option>
+                <option selected={percentagePoint===10} key={10} value={10}>10%</option>
+                <option selected={percentagePoint===20} key={20} value={20}>20%</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#666' }}>
+                Reduction Preference
+              </label>
+              <select 
+                onChange={handleReductionPreference}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd'
+                }}>
+                <option selected={percentagePoint==='Relative'} key={'Relative'} value={'Relative'}>Relative</option>
+                <option selected={percentagePoint==='Absolute'} key={'Absolute'} value={'Absolute'}>Absolute</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
-      <br/><br/>
-      <div>
+
+      <div style={{
+        backgroundColor: '#fff',
+        padding: '2rem',
+        borderRadius: '12px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        marginBottom: '2rem'
+      }}>
         <Line height={600} width={800} data={data} options={options} />
       </div>
-      {/* Hyperbolic Tapering Schedule Table */}
-      <div style={{ marginTop: '2rem' }}>
-        <h4>Hyperbolic Tapering Schedule</h4>
-        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead>
-            <tr>
-              <th style={{ border: '1px solid #ccc', padding: '8px' }}>Step</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px' }}>Dose (mg)</th>
-              <th style={{ border: '1px solid #ccc', padding: '8px' }}>Occupancy (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* Show max dose as first row */}
-            <tr>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>Starting Dose</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{effectiveMaxDose}</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}</td>
-            </tr>
-            {/* Show each reduction step */}
-            {absoluteValues.slice(1).map((value, idx) => (
-              <tr key={idx + 1}>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{idx + 1}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{value.dose.toFixed(2)}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{value.occupancy.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      <div style={{
+        backgroundColor: '#fff',
+        padding: '2rem',
+        borderRadius: '12px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h4 style={{ 
+          color: '#2c3e50', 
+          marginBottom: '1.5rem',
+          fontSize: '1.2rem',
+          borderBottom: '2px solid #f0f0f0',
+          paddingBottom: '0.5rem'
+        }}>
+          Y-Axis Decrement Points
+        </h4>
+        <div style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem'
+        }}>
+          <div>
+            <h5 style={{ 
+              color: '#2c3e50', 
+              marginBottom: '1rem',
+              fontSize: '1.1rem'
+            }}>
+              Relative Reduction ({reductionRate}%)
+            </h5>
+            <ol style={{ 
+              listStyleType: 'none',
+              padding: 0,
+              margin: 0
+            }}>
+              <li style={{
+                padding: '0.75rem',
+                backgroundColor: '#f8f9fa',
+                marginBottom: '0.5rem',
+                borderRadius: '4px',
+                display: 'flex',
+                justifyContent: 'space-between'
+              }}>
+                <span>Starting Dose</span>
+                <span style={{ fontWeight: 'bold' }}>
+                  {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
+                </span>
+              </li>
+              {relativeValues.slice(1).map((value, index) => (
+                <li key={`relative-${index}`} style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#f8f9fa',
+                  marginBottom: '0.5rem',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  justifyContent: 'space-between'
+                }}>
+                  <span>Step {index + 1}</span>
+                  <span style={{ fontWeight: 'bold' }}>
+                    {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <h5 style={{ 
+              color: '#2c3e50', 
+              marginBottom: '1rem',
+              fontSize: '1.1rem'
+            }}>
+              Absolute Reduction ({reductionRate}%)
+            </h5>
+            <ol style={{ 
+              listStyleType: 'none',
+              padding: 0,
+              margin: 0
+            }}>
+              <li style={{
+                padding: '0.75rem',
+                backgroundColor: '#f8f9fa',
+                marginBottom: '0.5rem',
+                borderRadius: '4px',
+                display: 'flex',
+                justifyContent: 'space-between'
+              }}>
+                <span>Starting Dose</span>
+                <span style={{ fontWeight: 'bold' }}>
+                  {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
+                </span>
+              </li>
+              {absoluteValues.slice(1).map((value, index) => (
+                <li key={`absolute-${index}`} style={{
+                  padding: '0.75rem',
+                  backgroundColor: '#f8f9fa',
+                  marginBottom: '0.5rem',
+                  borderRadius: '4px',
+                  display: 'flex',
+                  justifyContent: 'space-between'
+                }}>
+                  <span>Step {index + 1}</span>
+                  <span style={{ fontWeight: 'bold' }}>
+                    {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <div style={{
+        backgroundColor: '#f8f9fa',
+        padding: '2rem',
+        borderRadius: '12px',
+        marginTop: '2rem',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        <h2 style={{
+          fontSize: '1.5rem',
+          color: '#2c3e50',
+          marginBottom: '1.5rem',
+          fontWeight: '500'
+        }}>
+          About the Calculator
+        </h2>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem',
+          marginBottom: '2rem'
+        }}>
+          <div>
+            <h3 style={{
+              fontSize: '1.2rem',
+              color: '#2c3e50',
+              marginBottom: '1rem',
+              fontWeight: '500'
+            }}>
+              The Model
+            </h3>
+            <p style={{
+              lineHeight: '1.6',
+              color: '#444',
+              marginBottom: '1rem'
+            }}>
+              This calculator uses the Michaelis-Menten equation to model the relationship between drug dose and receptor occupancy:
+            </p>
+            <div style={{
+              backgroundColor: '#fff',
+              padding: '1rem',
+              borderRadius: '6px',
+              marginBottom: '1rem',
+              fontFamily: 'monospace',
+              fontSize: '1.1rem',
+              color: '#2c3e50'
+            }}>
+              V = (Vmax * [S]) / (Km + [S])
+            </div>
+            <p style={{
+              lineHeight: '1.6',
+              color: '#444'
+            }}>
+              Where:
+              <ul style={{
+                listStyleType: 'none',
+                paddingLeft: '1rem',
+                marginTop: '0.5rem'
+              }}>
+                <li>• Vmax: Maximum receptor occupancy (horizontal asymptote)</li>
+                <li>• Km: Dose at which occupancy is half of Vmax</li>
+                <li>• [S]: Drug dose</li>
+              </ul>
+            </p>
+          </div>
+
+          <div>
+            <h3 style={{
+              fontSize: '1.2rem',
+              color: '#2c3e50',
+              marginBottom: '1rem',
+              fontWeight: '500'
+            }}>
+              How to Use
+            </h3>
+            <ol style={{
+              paddingLeft: '1.5rem',
+              color: '#444',
+              lineHeight: '1.6'
+            }}>
+              <li style={{ marginBottom: '0.5rem' }}>Select your antidepressant and target brain region</li>
+              <li style={{ marginBottom: '0.5rem' }}>Enter your starting dose</li>
+              <li style={{ marginBottom: '0.5rem' }}>Choose your desired reduction rate</li>
+              <li style={{ marginBottom: '0.5rem' }}>Select between relative or absolute reduction</li>
+              <li style={{ marginBottom: '0.5rem' }}>View the graph and reduction schedule</li>
+            </ol>
+          </div>
+        </div>
+
+        <div style={{
+          fontSize: '0.9rem',
+          color: '#666',
+          borderTop: '1px solid #e9ecef',
+          paddingTop: '1rem',
+          marginTop: '1rem'
+        }}>
+          Based on research from: 
+          <a 
+            href="https://www.nature.com/articles/s41380-021-01285-w#Sec7" 
+            style={{ 
+              color: '#3498db', 
+              textDecoration: 'none',
+              marginLeft: '0.5rem',
+              fontWeight: '500'
+            }}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review
+          </a>
+        </div>
       </div>
     </div>
 }
