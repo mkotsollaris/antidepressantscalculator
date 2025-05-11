@@ -308,17 +308,23 @@ const SimpleChart = () => {
     const [reductionRate, setReductionRate] = useState(10);
     const [reductionPreference, setReductionPreference] = useState('relative');
     
+    // Get the effective max dose based on whether startingPoint is set
+    const effectiveMaxDose = startingPoint ? startingPoint : maxDose;
+    
     useEffect(() => {
       setOccupancyDifference(computeOccupancyDifference(reactionRate, percentagePoint));
-    }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint]);
+    }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint, startingPoint]);
   
+    // Calculate reduction values based on effectiveMaxDose
     const reductionValues = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
+      .filter(value => value <= effectiveMaxDose);
     
     const occupancyIncrements = reductionValues.map((value, index) => ({
       x: parseFloat(value),
       y: (index + 1) * percentagePoint,
     }));
 
+    // Keep the full graph range
     for (var i = 0; i <= maxDose; i+=1) {
       substrateConcentration.push(`${i}`);
       reactionRate.push((vMax * i) / (km + i));
@@ -344,6 +350,9 @@ const SimpleChart = () => {
     const handleStartingPoint = (e: any) => {
       const newStartingPoint = parseInt(e.target.value);
       setStartingPoint(newStartingPoint);
+      // Clear the arrays to force recalculation
+      substrateConcentration.length = 0;
+      reactionRate.length = 0;
     }
 
     const handleReductionRate = (e: any) => {
@@ -442,7 +451,7 @@ const SimpleChart = () => {
       </div>
       <div>
       <strong>Starting Point</strong>:{' '}
-      <input onChange={handleStartingPoint}/>
+      <input type="number" min="0" max={maxDose} onChange={handleStartingPoint} placeholder={`Max: ${maxDose}mg`}/>
       </div>
       <div>
       <strong>Occupancy Reduction (%)</strong>:{' '}
@@ -467,7 +476,7 @@ const SimpleChart = () => {
       <h4>{percentagePoint}% Y-Axis decrement points</h4>
       <ol>
         <li key={Math.random()}>
-            {maxDose} mg
+            {effectiveMaxDose} mg
           </li>
         {reductionValues.reverse().map((value, index) => (
           <li key={index}>
@@ -495,8 +504,8 @@ const SimpleChart = () => {
             {/* Show max dose as first row */}
             <tr>
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>Starting Dose</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{maxDose}</td>
-              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * maxDose) / (km + maxDose)).toFixed(2)}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{effectiveMaxDose}</td>
+              <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}</td>
             </tr>
             {/* Show each reduction step */}
             {reductionValues.slice().reverse().map((dose, idx) => (
