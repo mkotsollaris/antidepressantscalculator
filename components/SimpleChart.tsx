@@ -319,21 +319,21 @@ const SimpleChart = () => {
     const getRelativeReductionValues = () => {
       if (!startingPoint) return [];
       const values = [];
-      const startDose = startingPoint;
-      const startOccupancy = (vMax * startDose) / (km + startDose); // Calculate initial occupancy
-      const reductionAmount = startOccupancy * (reductionRate / 100); // Calculate reduction amount based on starting occupancy
+      const startDose = Number(startingPoint.toFixed(2));
+      const startOccupancy = Number(((vMax * startDose) / (km + startDose)).toFixed(2)); // Calculate initial occupancy
+      const reductionAmount = Number((startOccupancy * (reductionRate / 100)).toFixed(2)); // Calculate reduction amount based on starting occupancy
       
       let currentDose = startDose;
       let currentOccupancy = startOccupancy;
       
       while (currentDose > 0.1) { // Stop when dose is very small
         values.push({
-          dose: currentDose,
-          occupancy: currentOccupancy
+          dose: Number(currentDose.toFixed(2)),
+          occupancy: Number(currentOccupancy.toFixed(2))
         });
-        currentOccupancy = currentOccupancy - reductionAmount; // Subtract the same amount each time
+        currentOccupancy = Number((currentOccupancy - reductionAmount).toFixed(2)); // Subtract the same amount each time
         // Calculate the corresponding dose for the new occupancy
-        currentDose = (km * currentOccupancy) / (vMax - currentOccupancy);
+        currentDose = Number(((km * currentOccupancy) / (vMax - currentOccupancy)).toFixed(2));
       }
       return values;
     };
@@ -342,12 +342,8 @@ const SimpleChart = () => {
     const getAbsoluteReductionValues = () => {
       if (!startingPoint) return [];
       const values = [];
-      const startDose = startingPoint;
-      const startOccupancy = (vMax * startDose) / (km + startDose); // Calculate initial occupancy
-      
-      // Get all possible doses for the drug
-      const allDoses = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
-        .filter(value => value <= effectiveMaxDose);
+      const startDose = Number(startingPoint.toFixed(2));
+      const startOccupancy = Number(((vMax * startDose) / (km + startDose)).toFixed(2)); // Calculate initial occupancy
       
       // Start with the initial dose
       values.push({
@@ -355,26 +351,24 @@ const SimpleChart = () => {
         occupancy: startOccupancy
       });
 
-      // For each step, find the closest dose that gives us the next reduction
-      let currentOccupancy = startOccupancy;
-      for (let i = 0; i < allDoses.length; i++) {
-        const targetOccupancy = currentOccupancy - reductionRate;
-        if (targetOccupancy <= 0) break;
-
-        // Find the closest dose that gives us the target occupancy
-        const closestDose = allDoses.reduce((prev, curr) => {
-          const prevOccupancy = (vMax * prev) / (km + prev);
-          const currOccupancy = (vMax * curr) / (km + curr);
-          return Math.abs(currOccupancy - targetOccupancy) < Math.abs(prevOccupancy - targetOccupancy) ? curr : prev;
-        });
-
-        const closestOccupancy = (vMax * closestDose) / (km + closestDose);
-        values.push({
-          dose: closestDose,
-          occupancy: closestOccupancy
-        });
-        currentOccupancy = closestOccupancy;
+      // Calculate target occupancy percentages
+      const targetPercentages = [];
+      let currentPercentage = Math.floor(startOccupancy / reductionRate) * reductionRate; // Round down to nearest reductionRate
+      while (currentPercentage >= reductionRate) {
+        targetPercentages.push(currentPercentage);
+        currentPercentage -= reductionRate;
       }
+
+      // For each target percentage, calculate the exact dose needed
+      targetPercentages.forEach(targetPercentage => {
+        // Calculate the exact dose needed for the target occupancy using the inverse of Michaelis-Menten
+        const targetDose = Number(((km * targetPercentage) / (vMax - targetPercentage)).toFixed(2));
+        
+        values.push({
+          dose: targetDose,
+          occupancy: targetPercentage
+        });
+      });
       
       return values;
     };
@@ -383,8 +377,8 @@ const SimpleChart = () => {
     const absoluteValues = getAbsoluteReductionValues();
     
     const occupancyIncrements = absoluteValues.map((value, index) => ({
-      x: parseFloat(value.dose),
-      y: value.occupancy,
+      x: Number(value.dose.toFixed(2)),
+      y: Number(value.occupancy.toFixed(2)),
     }));
 
     // Keep the full graph range
@@ -542,7 +536,7 @@ const SimpleChart = () => {
           <h5>Relative Reduction ({reductionRate}%)</h5>
           <ol>
             <li key="relative-start">
-              {effectiveMaxDose} mg ({(vMax * effectiveMaxDose) / (km + effectiveMaxDose).toFixed(2)}%)
+              {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
             </li>
             {relativeValues.slice(1).map((value, index) => (
               <li key={`relative-${index}`}>
@@ -555,7 +549,7 @@ const SimpleChart = () => {
           <h5>Absolute Reduction ({reductionRate}%)</h5>
           <ol>
             <li key="absolute-start">
-              {effectiveMaxDose} mg ({(vMax * effectiveMaxDose) / (km + effectiveMaxDose).toFixed(2)}%)
+              {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
             </li>
             {absoluteValues.slice(1).map((value, index) => (
               <li key={`absolute-${index}`}>
