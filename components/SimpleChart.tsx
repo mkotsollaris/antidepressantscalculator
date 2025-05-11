@@ -3,6 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
+import { Outfit } from '@next/font/google';
+
+const outfit = Outfit({ subsets: ['latin'] });
 
 ChartJS.register(...registerables, ArcElement, Tooltip, Legend);
 
@@ -238,32 +241,109 @@ function getTargets(key: string) {
 }
 
 const options = {
-  pointRadius: 0,
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     tooltip: {
       mode: 'index',
       intersect: false,
+      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+      titleColor: '#2c3e50',
+      bodyColor: '#2c3e50',
+      borderColor: '#e0e0e0',
+      borderWidth: 1,
+      padding: 12,
+      displayColors: false,
+      callbacks: {
+        label: function(context) {
+          return `Dose: ${context.parsed.x.toFixed(2)}mg, Occupancy: ${context.parsed.y.toFixed(2)}%`;
+        }
+      }
     },
+    legend: {
+      position: 'top',
+      align: 'end',
+      labels: {
+        font: {
+          size: 14,
+          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+        },
+        padding: 20,
+        usePointStyle: true,
+        pointStyle: 'circle'
+      }
+    }
   },
-  maintainAspectRatio: false,
   scales: {
     x: {
-      type: 'linear', // Add this line to change the x-axis type to 'linear'
+      type: 'linear',
       display: true,
       position: 'bottom',
       title: {
         display: true,
         text: 'Drug Dose (mg)',
+        font: {
+          size: 14,
+          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          weight: '500'
+        },
+        padding: {top: 10}
       },
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
+        drawBorder: true,
+        borderColor: 'rgba(0, 0, 0, 0.1)'
+      },
+      ticks: {
+        font: {
+          size: 12,
+          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+        },
+        padding: 8
+      }
     },
     y: {
       title: {
         display: true,
         text: 'Receptor Occupancy (%)',
+        font: {
+          size: 14,
+          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+          weight: '500'
+        },
+        padding: {bottom: 10}
       },
-    },
+      grid: {
+        color: 'rgba(0, 0, 0, 0.05)',
+        drawBorder: true,
+        borderColor: 'rgba(0, 0, 0, 0.1)'
+      },
+      ticks: {
+        font: {
+          size: 12,
+          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+        },
+        padding: 8
+      },
+      min: 0,
+      max: 100
+    }
   },
+  interaction: {
+    mode: 'nearest',
+    axis: 'x',
+    intersect: false
+  },
+  elements: {
+    line: {
+      tension: 0.4
+    },
+    point: {
+      radius: 0,
+      hitRadius: 8,
+      hoverRadius: 6
+    }
+  }
 };
 
 
@@ -290,6 +370,77 @@ function computeOccupancyDifference(reactionRate, stepReduction) {
   }
   return occupancyDifference
 }
+
+const TooltipComponent = ({ text }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div style={{ position: 'relative', display: 'inline-block' }}>
+      <span 
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        style={{ 
+          marginLeft: '0.5rem',
+          color: '#666',
+          cursor: 'help',
+          display: 'inline-block',
+          fontSize: '1rem',
+          fontWeight: '500',
+          width: '22px',
+          height: '22px',
+          lineHeight: '22px',
+          textAlign: 'center',
+          borderRadius: '50%',
+          backgroundColor: '#f0f0f0',
+          transition: 'all 0.2s ease',
+          userSelect: 'none',
+          WebkitUserSelect: 'none'
+        }}
+      >
+        ?
+      </span>
+      {isVisible && (
+        <div 
+          onMouseEnter={() => setIsVisible(true)}
+          onMouseLeave={() => setIsVisible(false)}
+          style={{
+            position: 'absolute',
+            bottom: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: '#2c3e50',
+            color: 'white',
+            padding: '1rem 1.2rem',
+            borderRadius: '6px',
+            fontSize: '1rem',
+            width: 'max-content',
+            maxWidth: '300px',
+            zIndex: 1000,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            marginBottom: '0.8rem',
+            fontFamily: outfit.style.fontFamily,
+            lineHeight: '1.5',
+            fontWeight: '400',
+            letterSpacing: '0.3px',
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            pointerEvents: 'auto'
+          }}
+        >
+          {text}
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            border: '6px solid transparent',
+            borderTopColor: '#2c3e50'
+          }} />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const SimpleChart = () => {
 
@@ -418,8 +569,7 @@ const SimpleChart = () => {
     }
 
     const handleReductionPreference = (e: any) => {
-      const newReductionPreference = parseInt(e.target.value);
-      setReductionPreference(newReductionPreference)
+      setReductionPreference(e.target.value);
     }
 
     const handleTargetChange = (e: any) => {
@@ -448,33 +598,39 @@ const SimpleChart = () => {
       labels: substrateConcentration,
       datasets: [
         {
-          label: 'Occupancy (%)',
+          label: 'Occupancy Curve',
           data: reactionRate,
-          backgroundColor: 'rgba(0, 0, 0, 1)',
-          borderColor: 'rgba(0, 0, 0, 1)',
-          borderWidth: 3,
-          fill: false,
+          backgroundColor: 'rgba(41, 128, 185, 0.1)',
+          borderColor: 'rgba(41, 128, 185, 1)',
+          borderWidth: 2,
+          fill: true,
+          pointBackgroundColor: 'rgba(41, 128, 185, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: 'rgba(41, 128, 185, 1)',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
         },
-          // {
-          //   label: 'Occupancy Difference',
-          //   data: occupancyDifference,
-          //   backgroundColor: 'rgba(54, 162, 235, 0.2)',
-          //   borderColor: 'rgba(54, 162, 235, 1)',
-          //   borderWidth: 3,
-          //   fill: 'none',
-          // },
-          {
-            label: 'Increment Point',
-            data: occupancyIncrements,
-            backgroundColor: 'rgba(75, 192, 192, 1)',
-            borderColor: 'rgba(75, 192, 192, 1)',
-            borderWidth: 3,
-            fill: false,
-            pointRadius: 4,
-            pointHoverRadius: 6,
-            showLine: false
-          },
-      ],
+        {
+          label: 'Reduction Points',
+          data: occupancyIncrements,
+          backgroundColor: 'rgba(231, 76, 60, 1)',
+          borderColor: 'rgba(231, 76, 60, 1)',
+          borderWidth: 0,
+          fill: false,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointHoverBackgroundColor: 'rgba(231, 76, 60, 1)',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2,
+          showLine: false
+        }
+      ]
     };
     
 
@@ -482,7 +638,7 @@ const SimpleChart = () => {
       maxWidth: '1200px',
       margin: '0 auto',
       padding: '2rem',
-      fontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+      fontFamily: outfit.style.fontFamily
     }}>
       <div style={{
         backgroundColor: '#f8f9fa',
@@ -492,17 +648,18 @@ const SimpleChart = () => {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <h1 style={{
-          fontSize: '2rem',
+          fontSize: '3rem',
           color: '#2c3e50',
           marginBottom: '1rem',
           fontWeight: '600',
-          letterSpacing: '-0.5px'
+          letterSpacing: '-0.5px',
+          fontFamily: outfit.style.fontFamily
         }}>
           Antidepressant Hyperbolic Calculator
         </h1>
         
         <div style={{
-          fontSize: '1.1rem',
+          fontSize: '1.3rem',
           color: '#666',
           marginBottom: '1.5rem',
           lineHeight: '1.6'
@@ -523,16 +680,23 @@ const SimpleChart = () => {
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          <h4 style={{ color: '#2c3e50', marginBottom: '1rem' }}>Drug & Brain Area</h4>
+          <h4 style={{ 
+            color: '#2c3e50', 
+            marginBottom: '1rem',
+            fontFamily: outfit.style.fontFamily,
+            fontSize: '1.5rem'
+          }}>Drug & Brain Area</h4>
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
             <select 
               onChange={handleDropdownChange}
               style={{
-                padding: '0.5rem',
+                padding: '0.75rem',
                 borderRadius: '4px',
                 border: '1px solid #ddd',
                 flex: '1',
-                minWidth: '200px'
+                minWidth: '200px',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
               }}>
               {antiDepressantOptions.map(option => 
                 <option key={option} value={option}>{option}</option>
@@ -541,11 +705,13 @@ const SimpleChart = () => {
             <select 
               onChange={handleTargetChange}
               style={{
-                padding: '0.5rem',
+                padding: '0.75rem',
                 borderRadius: '4px',
                 border: '1px solid #ddd',
                 flex: '1',
-                minWidth: '200px'
+                minWidth: '200px',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
               }}>
               {targets.map(option => 
                 <option key={option} value={option}>{option}</option>
@@ -560,11 +726,23 @@ const SimpleChart = () => {
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          <h4 style={{ color: '#2c3e50', marginBottom: '1rem' }}>Reduction Settings</h4>
+          <h4 style={{ 
+            color: '#2c3e50', 
+            marginBottom: '1rem',
+            fontFamily: outfit.style.fontFamily,
+            fontSize: '1.5rem'
+          }}>Reduction Settings</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#666' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#666',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
+              }}>
                 Starting Dose
+                <TooltipComponent text="Enter your current medication dose in milligrams (mg). This will be used as the starting point for calculating the reduction schedule." />
               </label>
               <input 
                 type="number" 
@@ -574,43 +752,65 @@ const SimpleChart = () => {
                 placeholder={`Max: ${maxDose}mg`}
                 style={{
                   width: '100%',
-                  padding: '0.5rem',
+                  padding: '0.75rem',
                   borderRadius: '4px',
-                  border: '1px solid #ddd'
+                  border: '1px solid #ddd',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
                 }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#666' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#666',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
+              }}>
                 Occupancy Reduction (%)
+                <TooltipComponent text="Choose how much to reduce the receptor occupancy at each step. A smaller percentage means a more gradual reduction." />
               </label>
               <select 
                 onChange={handleReductionRate}
                 style={{
                   width: '100%',
-                  padding: '0.5rem',
+                  padding: '0.75rem',
                   borderRadius: '4px',
-                  border: '1px solid #ddd'
+                  border: '1px solid #ddd',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
                 }}>
                 <option selected={percentagePoint===5} key={5} value={5}>5%</option>
                 <option selected={percentagePoint===10} key={10} value={10}>10%</option>
+                <option selected={percentagePoint===15} key={15} value={15}>15%</option>
                 <option selected={percentagePoint===20} key={20} value={20}>20%</option>
               </select>
             </div>
             <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', color: '#666' }}>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#666',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
+              }}>
                 Reduction Preference
+                <TooltipComponent text="Relative: Reduces by a percentage of the current occupancy. Absolute: Reduces to specific occupancy percentages." />
               </label>
               <select 
+                value={reductionPreference}
                 onChange={handleReductionPreference}
                 style={{
                   width: '100%',
-                  padding: '0.5rem',
+                  padding: '0.75rem',
                   borderRadius: '4px',
-                  border: '1px solid #ddd'
+                  border: '1px solid #ddd',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
                 }}>
-                <option selected={percentagePoint==='Relative'} key={'Relative'} value={'Relative'}>Relative</option>
-                <option selected={percentagePoint==='Absolute'} key={'Absolute'} value={'Absolute'}>Absolute</option>
+                <option value="relative">Relative</option>
+                <option value="absolute">Absolute</option>
               </select>
             </div>
           </div>
@@ -618,85 +818,61 @@ const SimpleChart = () => {
       </div>
 
       <div style={{
-        backgroundColor: '#fff',
-        padding: '2rem',
-        borderRadius: '12px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        marginBottom: '2rem'
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: '2rem',
+        marginTop: '2rem'
       }}>
-        <Line height={600} width={800} data={data} options={options} />
-      </div>
-
-      <div style={{
-        backgroundColor: '#fff',
-        padding: '2rem',
-        borderRadius: '12px',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h4 style={{ 
-          color: '#2c3e50', 
-          marginBottom: '1.5rem',
-          fontSize: '1.2rem',
-          borderBottom: '2px solid #f0f0f0',
-          paddingBottom: '0.5rem'
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '2rem',
+          borderRadius: '12px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          Y-Axis Decrement Points
-        </h4>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '2rem'
-        }}>
-          <div>
-            <h5 style={{ 
-              color: '#2c3e50', 
-              marginBottom: '1rem',
-              fontSize: '1.1rem'
-            }}>
-              Relative Reduction ({reductionRate}%)
-            </h5>
-            <ol style={{ 
-              listStyleType: 'none',
-              padding: 0,
-              margin: 0
-            }}>
-              <li style={{
-                padding: '0.75rem',
-                backgroundColor: '#f8f9fa',
-                marginBottom: '0.5rem',
-                borderRadius: '4px',
-                display: 'flex',
-                justifyContent: 'space-between'
-              }}>
-                <span>Starting Dose</span>
-                <span style={{ fontWeight: 'bold' }}>
-                  {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
-                </span>
-              </li>
-              {relativeValues.slice(1).map((value, index) => (
-                <li key={`relative-${index}`} style={{
-                  padding: '0.75rem',
-                  backgroundColor: '#f8f9fa',
-                  marginBottom: '0.5rem',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  justifyContent: 'space-between'
-                }}>
-                  <span>Step {index + 1}</span>
-                  <span style={{ fontWeight: 'bold' }}>
-                    {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
-                  </span>
-                </li>
-              ))}
-            </ol>
+          <h4 style={{ 
+            color: '#2c3e50', 
+            marginBottom: '1.5rem',
+            fontSize: '1.5rem',
+            borderBottom: '2px solid #f0f0f0',
+            paddingBottom: '0.5rem',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            Receptor Occupancy Graph
+            <TooltipComponent text="The curve shows the relationship between drug dose and receptor occupancy. Points on the curve represent reduction steps." />
+          </h4>
+          <div style={{ height: '500px' }}>
+            <Line data={data} options={options} />
           </div>
+        </div>
+
+        <div style={{
+          backgroundColor: '#fff',
+          padding: '2rem',
+          borderRadius: '12px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}>
+          <h4 style={{ 
+            color: '#2c3e50', 
+            marginBottom: '1.5rem',
+            fontSize: '1.5rem',
+            borderBottom: '2px solid #f0f0f0',
+            paddingBottom: '0.5rem',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            Reduction Schedule
+            <TooltipComponent text="Detailed schedule showing each reduction step with corresponding dose and occupancy values." />
+          </h4>
           <div>
             <h5 style={{ 
               color: '#2c3e50', 
               marginBottom: '1rem',
-              fontSize: '1.1rem'
+              fontSize: '1.3rem',
+              fontFamily: outfit.style.fontFamily
             }}>
-              Absolute Reduction ({reductionRate}%)
+              {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
+              <TooltipComponent text={reductionPreference === 'relative' 
+                ? "Relative reduction: Each step reduces the current occupancy by a fixed percentage." 
+                : "Absolute reduction: Each step reduces to a specific occupancy percentage."} />
             </h5>
             <ol style={{ 
               listStyleType: 'none',
@@ -709,21 +885,25 @@ const SimpleChart = () => {
                 marginBottom: '0.5rem',
                 borderRadius: '4px',
                 display: 'flex',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
               }}>
                 <span>Starting Dose</span>
                 <span style={{ fontWeight: 'bold' }}>
                   {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
                 </span>
               </li>
-              {absoluteValues.slice(1).map((value, index) => (
-                <li key={`absolute-${index}`} style={{
+              {(reductionPreference === 'relative' ? relativeValues : absoluteValues).slice(1).map((value, index) => (
+                <li key={`reduction-${index}`} style={{
                   padding: '0.75rem',
                   backgroundColor: '#f8f9fa',
                   marginBottom: '0.5rem',
                   borderRadius: '4px',
                   display: 'flex',
-                  justifyContent: 'space-between'
+                  justifyContent: 'space-between',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
                 }}>
                   <span>Step {index + 1}</span>
                   <span style={{ fontWeight: 'bold' }}>
@@ -744,10 +924,11 @@ const SimpleChart = () => {
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <h2 style={{
-          fontSize: '1.5rem',
+          fontSize: '2rem',
           color: '#2c3e50',
           marginBottom: '1.5rem',
-          fontWeight: '500'
+          fontWeight: '500',
+          fontFamily: outfit.style.fontFamily
         }}>
           About the Calculator
         </h2>
@@ -760,17 +941,20 @@ const SimpleChart = () => {
         }}>
           <div>
             <h3 style={{
-              fontSize: '1.2rem',
+              fontSize: '1.6rem',
               color: '#2c3e50',
               marginBottom: '1rem',
-              fontWeight: '500'
+              fontWeight: '500',
+              fontFamily: outfit.style.fontFamily
             }}>
               The Model
             </h3>
             <p style={{
               lineHeight: '1.6',
               color: '#444',
-              marginBottom: '1rem'
+              marginBottom: '1rem',
+              fontFamily: outfit.style.fontFamily,
+              fontSize: '1.1rem'
             }}>
               This calculator uses the Michaelis-Menten equation to model the relationship between drug dose and receptor occupancy:
             </p>
@@ -780,20 +964,24 @@ const SimpleChart = () => {
               borderRadius: '6px',
               marginBottom: '1rem',
               fontFamily: 'monospace',
-              fontSize: '1.1rem',
+              fontSize: '1.2rem',
               color: '#2c3e50'
             }}>
               V = (Vmax * [S]) / (Km + [S])
             </div>
             <p style={{
               lineHeight: '1.6',
-              color: '#444'
+              color: '#444',
+              fontFamily: outfit.style.fontFamily,
+              fontSize: '1.1rem'
             }}>
               Where:
               <ul style={{
                 listStyleType: 'none',
                 paddingLeft: '1rem',
-                marginTop: '0.5rem'
+                marginTop: '0.5rem',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: '1.1rem'
               }}>
                 <li>• Vmax: Maximum receptor occupancy (horizontal asymptote)</li>
                 <li>• Km: Dose at which occupancy is half of Vmax</li>
@@ -804,17 +992,20 @@ const SimpleChart = () => {
 
           <div>
             <h3 style={{
-              fontSize: '1.2rem',
+              fontSize: '1.6rem',
               color: '#2c3e50',
               marginBottom: '1rem',
-              fontWeight: '500'
+              fontWeight: '500',
+              fontFamily: outfit.style.fontFamily
             }}>
               How to Use
             </h3>
             <ol style={{
               paddingLeft: '1.5rem',
               color: '#444',
-              lineHeight: '1.6'
+              lineHeight: '1.6',
+              fontFamily: outfit.style.fontFamily,
+              fontSize: '1.1rem'
             }}>
               <li style={{ marginBottom: '0.5rem' }}>Select your antidepressant and target brain region</li>
               <li style={{ marginBottom: '0.5rem' }}>Enter your starting dose</li>
@@ -826,11 +1017,12 @@ const SimpleChart = () => {
         </div>
 
         <div style={{
-          fontSize: '0.9rem',
+          fontSize: '1rem',
           color: '#666',
           borderTop: '1px solid #e9ecef',
           paddingTop: '1rem',
-          marginTop: '1rem'
+          marginTop: '1rem',
+          fontFamily: outfit.style.fontFamily
         }}>
           Based on research from: 
           <a 
