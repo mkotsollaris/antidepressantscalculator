@@ -420,9 +420,13 @@ const SimpleChart = () => {
           }
         },
         legend: {
+          display: true,
           position: 'top',
           align: 'end',
           labels: {
+            filter: function(legendItem, data) {
+              return legendItem.text === 'Dose Schedule';
+            },
             font: {
               size: 16,
               family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
@@ -604,34 +608,34 @@ const SimpleChart = () => {
       labels: substrateConcentration,
       datasets: [
         {
-          label: 'Occupancy Curve',
+          label: '',  // Empty label for the curve
           data: reactionRate,
-          backgroundColor: 'rgba(41, 128, 185, 0.1)',
-          borderColor: 'rgba(41, 128, 185, 1)',
+          backgroundColor: 'rgba(0, 114, 178, 0.1)',  // Blue
+          borderColor: 'rgba(0, 114, 178, 1)',        // Blue
           borderWidth: 2,
           fill: true,
-          pointBackgroundColor: 'rgba(41, 128, 185, 1)',
+          pointBackgroundColor: 'rgba(0, 114, 178, 1)',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: 0,
-          pointHoverRadius: 6,
-          pointHoverBackgroundColor: 'rgba(41, 128, 185, 1)',
+          pointHoverRadius: 8,
+          pointHoverBackgroundColor: 'rgba(0, 114, 178, 1)',
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2
         },
         {
-          label: 'Reduction Points',
+          label: 'Dose Schedule',
           data: occupancyIncrements,
-          backgroundColor: 'rgba(231, 76, 60, 1)',
-          borderColor: 'rgba(231, 76, 60, 1)',
+          backgroundColor: 'rgba(186, 104, 200, 1)',     // Magenta
+          borderColor: 'rgba(186, 104, 200, 1)',         // Magenta
           borderWidth: 0,
           fill: false,
-          pointRadius: 4,
-          pointHoverRadius: 6,
-          pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+          pointRadius: 6,
+          pointHoverRadius: 8,
+          pointBackgroundColor: 'rgba(186, 104, 200, 1)',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
-          pointHoverBackgroundColor: 'rgba(231, 76, 60, 1)',
+          pointHoverBackgroundColor: 'rgba(186, 104, 200, 1)',
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2,
           showLine: false
