@@ -643,18 +643,18 @@ const SimpleChart = () => {
     return <div style={{
       maxWidth: '1200px',
       margin: '0 auto',
-      padding: '2rem',
+      padding: '1rem',
       fontFamily: outfit.style.fontFamily
     }}>
       <div style={{
         backgroundColor: '#f8f9fa',
-        padding: '2rem',
+        padding: '1.5rem',
         borderRadius: '12px',
-        marginBottom: '2rem',
+        marginBottom: '1.5rem',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <h1 style={{
-          fontSize: '3rem',
+          fontSize: 'clamp(2rem, 5vw, 3rem)',
           color: '#2c3e50',
           marginBottom: '1rem',
           fontWeight: '600',
@@ -665,7 +665,7 @@ const SimpleChart = () => {
         </h1>
         
         <div style={{
-          fontSize: '1.3rem',
+          fontSize: 'clamp(1rem, 3vw, 1.3rem)',
           color: '#666',
           marginBottom: '1.5rem',
           lineHeight: '1.6'
@@ -676,9 +676,9 @@ const SimpleChart = () => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '2rem',
-        marginBottom: '2rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+        gap: '1.5rem',
+        marginBottom: '1.5rem'
       }}>
         <div style={{
           backgroundColor: '#fff',
@@ -847,20 +847,20 @@ const SimpleChart = () => {
 
       <div style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '2rem',
-        marginTop: '2rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+        gap: '1.5rem',
+        marginTop: '1.5rem'
       }}>
         <div style={{
           backgroundColor: '#fff',
-          padding: '2rem',
+          padding: '1.5rem',
           borderRadius: '12px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <h4 style={{ 
             color: '#2c3e50', 
             marginBottom: '1.5rem',
-            fontSize: '1.5rem',
+            fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
             borderBottom: '2px solid #f0f0f0',
             paddingBottom: '0.5rem',
             fontFamily: outfit.style.fontFamily
@@ -868,21 +868,21 @@ const SimpleChart = () => {
             Receptor Occupancy Graph
             <TooltipComponent text="The curve shows the relationship between drug dose and receptor occupancy. Points on the curve represent reduction steps." />
           </h4>
-          <div style={{ height: '500px' }}>
+          <div style={{ height: 'clamp(300px, 50vw, 500px)' }}>
             <Line data={data} options={options} />
           </div>
         </div>
 
         <div style={{
           backgroundColor: '#fff',
-          padding: '2rem',
+          padding: '1.5rem',
           borderRadius: '12px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <h4 style={{ 
             color: '#2c3e50', 
             marginBottom: '1.5rem',
-            fontSize: '1.5rem',
+            fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
             borderBottom: '2px solid #f0f0f0',
             paddingBottom: '0.5rem',
             fontFamily: outfit.style.fontFamily
@@ -894,7 +894,7 @@ const SimpleChart = () => {
             <h5 style={{ 
               color: '#2c3e50', 
               marginBottom: '1rem',
-              fontSize: '1.3rem',
+              fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
               fontFamily: outfit.style.fontFamily
             }}>
               {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
@@ -915,7 +915,9 @@ const SimpleChart = () => {
                 display: 'flex',
                 justifyContent: 'space-between',
                 fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                flexWrap: 'wrap',
+                gap: '0.5rem'
               }}>
                 <span>Starting Dose</span>
                 <span style={{ fontWeight: 'bold' }}>
@@ -931,7 +933,9 @@ const SimpleChart = () => {
                   display: 'flex',
                   justifyContent: 'space-between',
                   fontFamily: outfit.style.fontFamily,
-                  fontSize: '1.1rem'
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem'
                 }}>
                   <span>Step {index + 1}</span>
                   <span style={{ fontWeight: 'bold' }}>
@@ -946,13 +950,13 @@ const SimpleChart = () => {
 
       <div style={{
         backgroundColor: '#f8f9fa',
-        padding: '2rem',
+        padding: '1.5rem',
         borderRadius: '12px',
-        marginTop: '2rem',
+        marginTop: '1.5rem',
         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         <h2 style={{
-          fontSize: '2rem',
+          fontSize: 'clamp(1.5rem, 4vw, 2rem)',
           color: '#2c3e50',
           marginBottom: '1.5rem',
           fontWeight: '500',
@@ -963,13 +967,13 @@ const SimpleChart = () => {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '2rem',
-          marginBottom: '2rem'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '1.5rem'
         }}>
           <div>
             <h3 style={{
-              fontSize: '1.6rem',
+              fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
               color: '#2c3e50',
               marginBottom: '1rem',
               fontWeight: '500',
@@ -982,7 +986,7 @@ const SimpleChart = () => {
               color: '#444',
               marginBottom: '1rem',
               fontFamily: outfit.style.fontFamily,
-              fontSize: '1.1rem'
+              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
             }}>
               This calculator uses the Michaelis-Menten equation to model the relationship between drug dose and receptor occupancy:
             </p>
@@ -992,8 +996,9 @@ const SimpleChart = () => {
               borderRadius: '6px',
               marginBottom: '1rem',
               fontFamily: 'monospace',
-              fontSize: '1.2rem',
-              color: '#2c3e50'
+              fontSize: 'clamp(1rem, 3vw, 1.2rem)',
+              color: '#2c3e50',
+              overflowX: 'auto'
             }}>
               V = (Vmax * [S]) / (Km + [S])
             </div>
@@ -1001,7 +1006,7 @@ const SimpleChart = () => {
               lineHeight: '1.6',
               color: '#444',
               fontFamily: outfit.style.fontFamily,
-              fontSize: '1.1rem'
+              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
             }}>
               Where:
               <ul style={{
@@ -1009,7 +1014,7 @@ const SimpleChart = () => {
                 paddingLeft: '1rem',
                 marginTop: '0.5rem',
                 fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
               }}>
                 <li>• Vmax: Maximum receptor occupancy (horizontal asymptote)</li>
                 <li>• Km: Dose at which occupancy is half of Vmax</li>
@@ -1020,7 +1025,7 @@ const SimpleChart = () => {
 
           <div>
             <h3 style={{
-              fontSize: '1.6rem',
+              fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
               color: '#2c3e50',
               marginBottom: '1rem',
               fontWeight: '500',
@@ -1033,7 +1038,7 @@ const SimpleChart = () => {
               color: '#444',
               lineHeight: '1.6',
               fontFamily: outfit.style.fontFamily,
-              fontSize: '1.1rem'
+              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
             }}>
               <li style={{ marginBottom: '0.5rem' }}>Select your antidepressant and target brain region</li>
               <li style={{ marginBottom: '0.5rem' }}>Enter your starting dose</li>
@@ -1045,7 +1050,7 @@ const SimpleChart = () => {
         </div>
 
         <div style={{
-          fontSize: '1rem',
+          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
           color: '#666',
           borderTop: '1px solid #e9ecef',
           paddingTop: '1rem',
