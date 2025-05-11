@@ -255,6 +255,8 @@ const SimpleChart = () => {
     const [startingPoint, setStartingPoint] = useState(undefined);
     const [reductionRate, setReductionRate] = useState(10);
     const [reductionPreference, setReductionPreference] = useState('relative');
+    const [showCustomReduction, setShowCustomReduction] = useState(false);
+    const [customReductionRate, setCustomReductionRate] = useState('');
     
     // Get the effective max dose based on whether startingPoint is set
     const effectiveMaxDose = startingPoint ? startingPoint : maxDose;
@@ -361,8 +363,21 @@ const SimpleChart = () => {
     }
 
     const handleReductionRate = (e: any) => {
-      const newReductionRate = parseInt(e.target.value);
-      setReductionRate(newReductionRate)
+      const newReductionRate = e.target.value;
+      if (newReductionRate === 'other') {
+        setShowCustomReduction(true);
+      } else {
+        setShowCustomReduction(false);
+        setReductionRate(parseInt(newReductionRate));
+      }
+    }
+
+    const handleCustomReductionRate = (e: any) => {
+      const value = e.target.value;
+      setCustomReductionRate(value);
+      if (value && !isNaN(value)) {
+        setReductionRate(parseInt(value));
+      }
     }
 
     const handleReductionPreference = (e: any) => {
@@ -805,19 +820,40 @@ const SimpleChart = () => {
               </label>
               <select 
                 onChange={handleReductionRate}
+                value={showCustomReduction ? 'other' : reductionRate.toString()}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
                   borderRadius: '4px',
                   border: '1px solid #ddd',
                   fontFamily: outfit.style.fontFamily,
-                  fontSize: '1.1rem'
+                  fontSize: '1.1rem',
+                  marginBottom: showCustomReduction ? '0.5rem' : '0'
                 }}>
-                <option selected={percentagePoint===5} key={5} value={5}>5%</option>
-                <option selected={percentagePoint===10} key={10} value={10}>10%</option>
-                <option selected={percentagePoint===15} key={15} value={15}>15%</option>
-                <option selected={percentagePoint===20} key={20} value={20}>20%</option>
+                <option value="5">5%</option>
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+                <option value="20">20%</option>
+                <option value="other">Other</option>
               </select>
+              {showCustomReduction && (
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={customReductionRate}
+                  onChange={handleCustomReductionRate}
+                  placeholder="Enter custom reduction rate"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    fontFamily: outfit.style.fontFamily,
+                    fontSize: '1.1rem'
+                  }}
+                />
+              )}
             </div>
             <div>
               <label style={{ 
