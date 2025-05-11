@@ -776,8 +776,8 @@ const SimpleChart = () => {
                 type="number" 
                 min="0" 
                 max={maxDose} 
-                onChange={handleStartingPoint} 
-                placeholder={`Max: ${maxDose}mg`}
+                onChange={handleStartingPoint}
+                placeholder={`Enter your starting dose`}
                 style={{
                   width: '100%',
                   padding: '0.75rem',
