@@ -340,16 +340,51 @@ const SimpleChart = () => {
 
     // Calculate absolute reduction values
     const getAbsoluteReductionValues = () => {
-      return getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
+      if (!startingPoint) return [];
+      const values = [];
+      const startDose = startingPoint;
+      const startOccupancy = (vMax * startDose) / (km + startDose); // Calculate initial occupancy
+      
+      // Get all possible doses for the drug
+      const allDoses = getDoseForOccupancyIncrements(selectedAntiDepressant, selectedTarget, percentagePoint)
         .filter(value => value <= effectiveMaxDose);
+      
+      // Start with the initial dose
+      values.push({
+        dose: startDose,
+        occupancy: startOccupancy
+      });
+
+      // For each step, find the closest dose that gives us the next reduction
+      let currentOccupancy = startOccupancy;
+      for (let i = 0; i < allDoses.length; i++) {
+        const targetOccupancy = currentOccupancy - reductionRate;
+        if (targetOccupancy <= 0) break;
+
+        // Find the closest dose that gives us the target occupancy
+        const closestDose = allDoses.reduce((prev, curr) => {
+          const prevOccupancy = (vMax * prev) / (km + prev);
+          const currOccupancy = (vMax * curr) / (km + curr);
+          return Math.abs(currOccupancy - targetOccupancy) < Math.abs(prevOccupancy - targetOccupancy) ? curr : prev;
+        });
+
+        const closestOccupancy = (vMax * closestDose) / (km + closestDose);
+        values.push({
+          dose: closestDose,
+          occupancy: closestOccupancy
+        });
+        currentOccupancy = closestOccupancy;
+      }
+      
+      return values;
     };
 
     const relativeValues = getRelativeReductionValues();
     const absoluteValues = getAbsoluteReductionValues();
     
     const occupancyIncrements = absoluteValues.map((value, index) => ({
-      x: parseFloat(value),
-      y: (index + 1) * percentagePoint,
+      x: parseFloat(value.dose),
+      y: value.occupancy,
     }));
 
     // Keep the full graph range
@@ -517,14 +552,14 @@ const SimpleChart = () => {
           </ol>
         </div>
         <div>
-          <h5>Absolute Reduction ({percentagePoint}%)</h5>
+          <h5>Absolute Reduction ({reductionRate}%)</h5>
           <ol>
             <li key="absolute-start">
-              {effectiveMaxDose} mg
+              {effectiveMaxDose} mg ({(vMax * effectiveMaxDose) / (km + effectiveMaxDose).toFixed(2)}%)
             </li>
-            {absoluteValues.reverse().map((value, index) => (
+            {absoluteValues.slice(1).map((value, index) => (
               <li key={`absolute-${index}`}>
-                {value.toFixed(2)} mg
+                {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
               </li>
             ))}
           </ol>
@@ -554,11 +589,11 @@ const SimpleChart = () => {
               <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}</td>
             </tr>
             {/* Show each reduction step */}
-            {absoluteValues.slice().reverse().map((dose, idx) => (
+            {absoluteValues.slice(1).map((value, idx) => (
               <tr key={idx + 1}>
                 <td style={{ border: '1px solid #ccc', padding: '8px' }}>{idx + 1}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{dose}</td>
-                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{((vMax * dose) / (km + dose)).toFixed(2)}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{value.dose.toFixed(2)}</td>
+                <td style={{ border: '1px solid #ccc', padding: '8px' }}>{value.occupancy.toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
