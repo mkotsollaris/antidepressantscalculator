@@ -240,210 +240,7 @@ function getTargets(key: string) {
   return targetsArray;
 }
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    tooltip: {
-      mode: 'index',
-      intersect: false,
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      titleColor: '#2c3e50',
-      bodyColor: '#2c3e50',
-      borderColor: '#e0e0e0',
-      borderWidth: 1,
-      padding: 12,
-      displayColors: false,
-      callbacks: {
-        label: function(context) {
-          return `Dose: ${context.parsed.x.toFixed(2)}mg, Occupancy: ${context.parsed.y.toFixed(2)}%`;
-        }
-      }
-    },
-    legend: {
-      position: 'top',
-      align: 'end',
-      labels: {
-        font: {
-          size: 14,
-          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-        },
-        padding: 20,
-        usePointStyle: true,
-        pointStyle: 'circle'
-      }
-    }
-  },
-  scales: {
-    x: {
-      type: 'linear',
-      display: true,
-      position: 'bottom',
-      title: {
-        display: true,
-        text: 'Drug Dose (mg)',
-        font: {
-          size: 14,
-          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-          weight: '500'
-        },
-        padding: {top: 10}
-      },
-      grid: {
-        color: 'rgba(0, 0, 0, 0.05)',
-        drawBorder: true,
-        borderColor: 'rgba(0, 0, 0, 0.1)'
-      },
-      ticks: {
-        font: {
-          size: 12,
-          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-        },
-        padding: 8
-      }
-    },
-    y: {
-      title: {
-        display: true,
-        text: 'Receptor Occupancy (%)',
-        font: {
-          size: 14,
-          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
-          weight: '500'
-        },
-        padding: {bottom: 10}
-      },
-      grid: {
-        color: 'rgba(0, 0, 0, 0.05)',
-        drawBorder: true,
-        borderColor: 'rgba(0, 0, 0, 0.1)'
-      },
-      ticks: {
-        font: {
-          size: 12,
-          family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-        },
-        padding: 8
-      },
-      min: 0,
-      max: 100
-    }
-  },
-  interaction: {
-    mode: 'nearest',
-    axis: 'x',
-    intersect: false
-  },
-  elements: {
-    line: {
-      tension: 0.4
-    },
-    point: {
-      radius: 0,
-      hitRadius: 8,
-      hoverRadius: 6
-    }
-  }
-};
-
-
-const reductionApproachesOptions = {
-  Linear: [2, 5, 10 ,20],
-  // Microtapering: [],
-  // Minitapering: [5, 10, 15, 20]
-};
-
-function getReductionApproachOptions(key: string) {
-  return reductionApproachesOptions[key];
-}
-
-function getApproachOptions() {
-  return Object.keys(reductionApproachesOptions);
-}
-
-function computeOccupancyDifference(reactionRate, stepReduction) {
-  const occupancyDifference = [];
-  occupancyDifference.push(reactionRate[0]);
-  for (let i = parseInt(stepReduction); i < reactionRate.length+stepReduction; i+=1) {
-    if(i>=reactionRate.length) occupancyDifference.push(reactionRate[reactionRate.length-1] - reactionRate[reactionRate.length-1 - stepReduction])
-    else occupancyDifference.push(reactionRate[i] - reactionRate[i - stepReduction]);
-  }
-  return occupancyDifference
-}
-
-const TooltipComponent = ({ text }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  return (
-    <div style={{ position: 'relative', display: 'inline-block' }}>
-      <span 
-        onMouseEnter={() => setIsVisible(true)}
-        onMouseLeave={() => setIsVisible(false)}
-        style={{ 
-          marginLeft: '0.5rem',
-          color: '#666',
-          cursor: 'help',
-          display: 'inline-block',
-          fontSize: '1rem',
-          fontWeight: '500',
-          width: '22px',
-          height: '22px',
-          lineHeight: '22px',
-          textAlign: 'center',
-          borderRadius: '50%',
-          backgroundColor: '#f0f0f0',
-          transition: 'all 0.2s ease',
-          userSelect: 'none',
-          WebkitUserSelect: 'none'
-        }}
-      >
-        ?
-      </span>
-      {isVisible && (
-        <div 
-          onMouseEnter={() => setIsVisible(true)}
-          onMouseLeave={() => setIsVisible(false)}
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            backgroundColor: '#2c3e50',
-            color: 'white',
-            padding: '1rem 1.2rem',
-            borderRadius: '6px',
-            fontSize: '1rem',
-            width: 'max-content',
-            maxWidth: '300px',
-            zIndex: 1000,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
-            marginBottom: '0.8rem',
-            fontFamily: outfit.style.fontFamily,
-            lineHeight: '1.5',
-            fontWeight: '400',
-            letterSpacing: '0.3px',
-            whiteSpace: 'pre-wrap',
-            wordBreak: 'break-word',
-            pointerEvents: 'auto'
-          }}
-        >
-          {text}
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            border: '6px solid transparent',
-            borderTopColor: '#2c3e50'
-          }} />
-        </div>
-      )}
-    </div>
-  );
-};
-
 const SimpleChart = () => {
-
     const [km, setKm] = useState(2.33);
     const [vMax, setVmax] = useState(83.98);
     const substrateConcentration = [];
@@ -594,6 +391,215 @@ const SimpleChart = () => {
     }
 
     
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: '#2c3e50',
+          bodyColor: '#2c3e50',
+          borderColor: '#e0e0e0',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
+          titleFont: {
+            size: 16,
+            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+          },
+          bodyFont: {
+            size: 15,
+            family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+          },
+          callbacks: {
+            label: function(context) {
+              return `Dose: ${context.parsed.x.toFixed(2)}mg, Occupancy: ${context.parsed.y.toFixed(2)}%`;
+            }
+          }
+        },
+        legend: {
+          position: 'top',
+          align: 'end',
+          labels: {
+            font: {
+              size: 16,
+              family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+            },
+            padding: 20,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          display: true,
+          position: 'bottom',
+          title: {
+            display: true,
+            text: `${selectedAntiDepressant} Dose (mg)`,
+            font: {
+              size: 18,
+              family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+              weight: '700'
+            },
+            padding: {top: 10}
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawBorder: true,
+            borderColor: 'rgba(0, 0, 0, 0.1)'
+          },
+          ticks: {
+            font: {
+              size: 14,
+              family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+            },
+            padding: 8
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'SERT Occupancy (%)',
+            font: {
+              size: 18,
+              family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+              weight: '700'
+            },
+            padding: {bottom: 10}
+          },
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)',
+            drawBorder: true,
+            borderColor: 'rgba(0, 0, 0, 0.1)'
+          },
+          ticks: {
+            font: {
+              size: 14,
+              family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+            },
+            padding: 8
+          },
+          min: 0,
+          max: 100
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      },
+      elements: {
+        line: {
+          tension: 0.4
+        },
+        point: {
+          radius: 0,
+          hitRadius: 8,
+          hoverRadius: 6
+        }
+      }
+    };
+
+    const reductionApproachesOptions = {
+      Linear: [2, 5, 10 ,20],
+      // Microtapering: [],
+      // Minitapering: [5, 10, 15, 20]
+    };
+
+    function getReductionApproachOptions(key: string) {
+      return reductionApproachesOptions[key];
+    }
+
+    function getApproachOptions() {
+      return Object.keys(reductionApproachesOptions);
+    }
+
+    function computeOccupancyDifference(reactionRate, stepReduction) {
+      const occupancyDifference = [];
+      occupancyDifference.push(reactionRate[0]);
+      for (let i = parseInt(stepReduction); i < reactionRate.length+stepReduction; i+=1) {
+        if(i>=reactionRate.length) occupancyDifference.push(reactionRate[reactionRate.length-1] - reactionRate[reactionRate.length-1 - stepReduction])
+        else occupancyDifference.push(reactionRate[i] - reactionRate[i - stepReduction]);
+      }
+      return occupancyDifference
+    }
+
+    const TooltipComponent = ({ text }) => {
+      const [isVisible, setIsVisible] = useState(false);
+
+      return (
+        <div style={{ position: 'relative', display: 'inline-block' }}>
+          <span 
+            onMouseEnter={() => setIsVisible(true)}
+            onMouseLeave={() => setIsVisible(false)}
+            style={{ 
+              marginLeft: '0.5rem',
+              color: '#666',
+              cursor: 'help',
+              display: 'inline-block',
+              fontSize: '1rem',
+              fontWeight: '500',
+              width: '22px',
+              height: '22px',
+              lineHeight: '22px',
+              textAlign: 'center',
+              borderRadius: '50%',
+              backgroundColor: '#f0f0f0',
+              transition: 'all 0.2s ease',
+              userSelect: 'none',
+              WebkitUserSelect: 'none'
+            }}
+          >
+            ?
+          </span>
+          {isVisible && (
+            <div 
+              onMouseEnter={() => setIsVisible(true)}
+              onMouseLeave={() => setIsVisible(false)}
+              style={{
+                position: 'absolute',
+                bottom: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                backgroundColor: '#2c3e50',
+                color: 'white',
+                padding: '1rem 1.2rem',
+                borderRadius: '6px',
+                fontSize: '1rem',
+                width: 'max-content',
+                maxWidth: '300px',
+                zIndex: 1000,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                marginBottom: '0.8rem',
+                fontFamily: outfit.style.fontFamily,
+                lineHeight: '1.5',
+                fontWeight: '400',
+                letterSpacing: '0.3px',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+                pointerEvents: 'auto'
+              }}
+            >
+              {text}
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                border: '6px solid transparent',
+                borderTopColor: '#2c3e50'
+              }} />
+            </div>
+          )}
+        </div>
+      );
+    };
+
     const data = {
       labels: substrateConcentration,
       datasets: [
@@ -685,38 +691,60 @@ const SimpleChart = () => {
             marginBottom: '1rem',
             fontFamily: outfit.style.fontFamily,
             fontSize: '1.5rem'
-          }}>Drug & Brain Area</h4>
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <select 
-              onChange={handleDropdownChange}
-              style={{
-                padding: '0.75rem',
-                borderRadius: '4px',
-                border: '1px solid #ddd',
-                flex: '1',
-                minWidth: '200px',
+          }}>Antidepressant Information</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#666',
                 fontFamily: outfit.style.fontFamily,
                 fontSize: '1.1rem'
               }}>
-              {antiDepressantOptions.map(option => 
-                <option key={option} value={option}>{option}</option>
-              )}
-            </select>
-            <select 
-              onChange={handleTargetChange}
-              style={{
-                padding: '0.75rem',
-                borderRadius: '4px',
-                border: '1px solid #ddd',
-                flex: '1',
-                minWidth: '200px',
+                Antidepressant
+                <TooltipComponent text="Select the antidepressant medication you are currently taking. Each medication has specific receptor binding properties that affect the reduction schedule." />
+              </label>
+              <select 
+                onChange={handleDropdownChange}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
+                }}>
+                {antiDepressantOptions.map(option => 
+                  <option key={option} value={option}>{option}</option>
+                )}
+              </select>
+            </div>
+            <div>
+              <label style={{ 
+                display: 'block', 
+                marginBottom: '0.5rem', 
+                color: '#666',
                 fontFamily: outfit.style.fontFamily,
                 fontSize: '1.1rem'
               }}>
-              {targets.map(option => 
-                <option key={option} value={option}>{option}</option>
-              )}
-            </select>
+                Brain Area
+                <TooltipComponent text="Select the brain region where the medication's effects are being measured. Different brain areas may have varying receptor densities and binding characteristics." />
+              </label>
+              <select 
+                onChange={handleTargetChange}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
+                }}>
+                {targets.map(option => 
+                  <option key={option} value={option}>{option}</option>
+                )}
+              </select>
+            </div>
           </div>
         </div>
 
