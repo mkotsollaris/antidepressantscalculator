@@ -144,25 +144,6 @@ const antiDepressantData = {
   }
 }
 
-function getDoseForOccupancyIncrements(key, targetValue, increment) {
-  const km = getK(key, targetValue);
-  const vMax = getVmax(key, targetValue);
-  const doses = [];
-  const maxPercentage = 100;
-
-  for (let occupancy = increment; occupancy <= maxPercentage; occupancy += increment) {
-    const dose = ((km * occupancy) / (vMax - occupancy)).toFixed(2);
-    if (dose >= 0 && dose < vMax) {
-      doses.push(parseFloat(dose));
-    } else {
-      break;
-    }
-  }
-  // need this to include vMax
-  // doses.push(vMax)
-  return doses;
-}
-
 function getMaxDose(key: string, targetValue: string) {
   // @ts-ignore
   if (!antiDepressantData[key]) {
