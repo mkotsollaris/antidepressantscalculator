@@ -646,7 +646,7 @@ const SimpleChart = () => {
           borderWidth: 0,
           fill: false,
           pointRadius: 6,
-          pointHoverRadius: 8,
+          pointHoverRadius: 12,
           pointBackgroundColor: 'rgba(186, 104, 200, 1)',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
