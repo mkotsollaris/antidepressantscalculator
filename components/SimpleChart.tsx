@@ -919,53 +919,60 @@ const SimpleChart = () => {
           borderRadius: '12px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          <h4 style={{ 
-            color: '#2c3e50', 
-            marginBottom: '1.5rem',
-            fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
-            borderBottom: '2px solid #f0f0f0',
-            paddingBottom: '0.5rem',
-            fontFamily: outfit.style.fontFamily
-          }}>
-            Reduction Schedule
-            <TooltipComponent text="Detailed schedule showing each reduction step with corresponding dose and occupancy values." />
-          </h4>
+          
           <div>
-            <h5 style={{ 
-              color: '#2c3e50', 
-              marginBottom: '1rem',
-              fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
-              fontFamily: outfit.style.fontFamily
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              marginBottom: '1.5rem',
+              borderBottom: '2px solid #f0f0f0',
+              paddingBottom: '0.5rem'
             }}>
-              {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
+              <h3 style={{ 
+                color: '#2c3e50',
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                margin: 0,
+                fontFamily: outfit.style.fontFamily
+              }}>
+                {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
+              </h3>
               <TooltipComponent text={reductionPreference === 'relative' 
                 ? "Relative reduction: Each step reduces the current occupancy by a fixed percentage." 
                 : "Absolute reduction: Each step reduces to a specific occupancy percentage."} />
-            </h5>
-            <ol style={{ 
-              listStyleType: 'none',
-              padding: 0,
-              margin: 0
-            }}>
-              <li style={{
-                padding: '0.75rem',
+            </div>
+            {!startingPoint ? (
+              <div style={{
                 backgroundColor: '#f8f9fa',
-                marginBottom: '0.5rem',
-                borderRadius: '4px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                fontFamily: outfit.style.fontFamily,
-                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
-                flexWrap: 'wrap',
-                gap: '0.5rem'
+                padding: '2rem',
+                borderRadius: '8px',
+                textAlign: 'center',
+                border: '2px dashed #e0e0e0',
+                marginBottom: '1rem'
               }}>
-                <span>Starting Dose</span>
-                <span style={{ fontWeight: 'bold' }}>
-                  {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
-                </span>
-              </li>
-              {(reductionPreference === 'relative' ? relativeValues : absoluteValues).slice(1).map((value, index) => (
-                <li key={`reduction-${index}`} style={{
+                <div style={{
+                  fontSize: '1.2rem',
+                  color: '#666',
+                  marginBottom: '0.5rem',
+                  fontFamily: outfit.style.fontFamily
+                }}>
+                  Enter a Starting Dose to View Reduction Schedule
+                </div>
+                <div style={{
+                  fontSize: '0.9rem',
+                  color: '#888',
+                  fontFamily: outfit.style.fontFamily
+                }}>
+                  The reduction schedule will be calculated based on your current medication dose
+                </div>
+              </div>
+            ) : (
+              <ol style={{ 
+                listStyleType: 'none',
+                padding: 0,
+                margin: 0
+              }}>
+                <li style={{
                   padding: '0.75rem',
                   backgroundColor: '#f8f9fa',
                   marginBottom: '0.5rem',
@@ -975,15 +982,38 @@ const SimpleChart = () => {
                   fontFamily: outfit.style.fontFamily,
                   fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
                   flexWrap: 'wrap',
-                  gap: '0.5rem'
+                  gap: '0.5rem',
+                  border: '1px solid #e0e0e0',
+                  transition: 'all 0.3s ease'
                 }}>
-                  <span>Step {index + 1}</span>
+                  <span>Starting Dose</span>
                   <span style={{ fontWeight: 'bold' }}>
-                    {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+                    {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
                   </span>
                 </li>
-              ))}
-            </ol>
+                {(reductionPreference === 'relative' ? relativeValues : absoluteValues).slice(1).map((value, index) => (
+                  <li key={`reduction-${index}`} style={{
+                    padding: '0.75rem',
+                    backgroundColor: '#f8f9fa',
+                    marginBottom: '0.5rem',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    fontFamily: outfit.style.fontFamily,
+                    fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem',
+                    border: '1px solid #e0e0e0',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <span>Step {index + 1}</span>
+                    <span style={{ fontWeight: 'bold' }}>
+                      {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
         </div>
       </div>
