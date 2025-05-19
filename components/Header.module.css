@@ -43,12 +43,29 @@
   font-family: var(--outfit-font);
   transition: all 0.3s ease;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .logo:hover,
 .logo.active {
   color: #1a1a1a;
   transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+  .logo {
+    font-size: 1.2rem;
+    white-space: normal;
+    line-height: 1.2;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 1rem;
+    max-width: 150px;
+  }
 }
 
 /* Add transition for the active state */
