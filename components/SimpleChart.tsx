@@ -4,6 +4,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Line } from 'react-chartjs-2';
 import { registerables } from 'chart.js';
 import { Outfit } from '@next/font/google';
+import Layout from './Layout';
+import Header from './Header';
 
 const outfit = Outfit({ subsets: ['latin'] });
 
@@ -640,191 +642,140 @@ const SimpleChart = () => {
     };
     
 
-    return <div style={{
-      maxWidth: '1200px',
-      margin: '0 auto',
-      padding: '1rem',
-      fontFamily: outfit.style.fontFamily
-    }}>
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '1.5rem',
-        borderRadius: '12px',
-        marginBottom: '1.5rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h1 style={{
-          fontSize: 'clamp(2rem, 5vw, 3rem)',
-          color: '#2c3e50',
-          marginBottom: '1rem',
-          fontWeight: '600',
-          letterSpacing: '-0.5px',
-          fontFamily: outfit.style.fontFamily
-        }}>
-          Antidepressant Hyperbolic Calculator
-        </h1>
-        
+    return (
+      <Layout>
         <div style={{
-          fontSize: 'clamp(1rem, 3vw, 1.3rem)',
-          color: '#666',
-          marginBottom: '1.5rem',
-          lineHeight: '1.6'
-        }}>
-          Calculate and visualize the relationship between drug dose and receptor occupancy.
-        </div>
-      </div>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-        gap: '1.5rem',
-        marginBottom: '1.5rem'
-      }}>
-        <div style={{
-          backgroundColor: '#fff',
+          backgroundColor: '#f8f9fa',
           padding: '1.5rem',
-          borderRadius: '8px',
+          borderRadius: '12px',
+          marginBottom: '1.5rem',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          <h4 style={{ 
-            color: '#2c3e50', 
+          <h1 style={{
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
+            color: '#2c3e50',
             marginBottom: '1rem',
-            fontFamily: outfit.style.fontFamily,
-            fontSize: '1.5rem'
-          }}>Antidepressant Information</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                color: '#666',
-                fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
-              }}>
-                Antidepressant
-                <TooltipComponent text="Select the antidepressant medication you are currently taking. Each medication has specific receptor binding properties that affect the reduction schedule." />
-              </label>
-              <select 
-                onChange={handleDropdownChange}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  fontFamily: outfit.style.fontFamily,
-                  fontSize: '1.1rem'
-                }}>
-                {antiDepressantOptions.map(option => 
-                  <option key={option} value={option}>{option}</option>
-                )}
-              </select>
-            </div>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                color: '#666',
-                fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
-              }}>
-                Brain Area
-                <TooltipComponent text="Select the brain region where the medication's effects are being measured. Different brain areas may have varying receptor densities and binding characteristics." />
-              </label>
-              <select 
-                onChange={handleTargetChange}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  fontFamily: outfit.style.fontFamily,
-                  fontSize: '1.1rem'
-                }}>
-                {targets.map(option => 
-                  <option key={option} value={option}>{option}</option>
-                )}
-              </select>
-            </div>
+            fontWeight: '600',
+            letterSpacing: '-0.5px',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            Antidepressant Hyperbolic Calculator
+          </h1>
+          
+          <div style={{
+            fontSize: 'clamp(1rem, 3vw, 1.3rem)',
+            color: '#666',
+            marginBottom: '1.5rem',
+            lineHeight: '1.6'
+          }}>
+            Calculate and visualize the relationship between drug dose and receptor occupancy.
           </div>
         </div>
 
         <div style={{
-          backgroundColor: '#fff',
-          padding: '1.5rem',
-          borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '1.5rem',
+          marginBottom: '1.5rem'
         }}>
-          <h4 style={{ 
-            color: '#2c3e50', 
-            marginBottom: '1rem',
-            fontFamily: outfit.style.fontFamily,
-            fontSize: '1.5rem'
-          }}>Reduction Settings</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                color: '#666',
-                fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
-              }}>
-                Starting Dose
-                <TooltipComponent text="Enter your current medication dose in milligrams (mg). This will be used as the starting point for calculating the reduction schedule." />
-              </label>
-              <input 
-                type="number" 
-                min="0" 
-                max={maxDose} 
-                onChange={handleStartingPoint}
-                placeholder={`Enter your starting dose`}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <h4 style={{ 
+              color: '#2c3e50', 
+              marginBottom: '1rem',
+              fontFamily: outfit.style.fontFamily,
+              fontSize: '1.5rem'
+            }}>Antidepressant Information</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  color: '#666',
                   fontFamily: outfit.style.fontFamily,
                   fontSize: '1.1rem'
-                }}
-              />
-            </div>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                color: '#666',
-                fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
-              }}>
-                Occupancy Reduction (%)
-                <TooltipComponent text="Choose how much to reduce the receptor occupancy at each step. A smaller percentage means a more gradual reduction." />
-              </label>
-              <select 
-                onChange={handleReductionRate}
-                value={showCustomReduction ? 'other' : reductionRate.toString()}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  fontFamily: outfit.style.fontFamily,
-                  fontSize: '1.1rem',
-                  marginBottom: showCustomReduction ? '0.5rem' : '0'
                 }}>
-                <option value="5">5%</option>
-                <option value="10">10%</option>
-                <option value="15">15%</option>
-                <option value="20">20%</option>
-                <option value="other">Other</option>
-              </select>
-              {showCustomReduction && (
-                <input
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={customReductionRate}
-                  onChange={handleCustomReductionRate}
-                  placeholder="Enter custom reduction rate"
+                  Antidepressant
+                  <TooltipComponent text="Select the antidepressant medication you are currently taking. Each medication has specific receptor binding properties that affect the reduction schedule." />
+                </label>
+                <select 
+                  onChange={handleDropdownChange}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    fontFamily: outfit.style.fontFamily,
+                    fontSize: '1.1rem'
+                  }}>
+                  {antiDepressantOptions.map(option => 
+                    <option key={option} value={option}>{option}</option>
+                  )}
+                </select>
+              </div>
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  color: '#666',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
+                }}>
+                  Brain Area
+                  <TooltipComponent text="Select the brain region where the medication's effects are being measured. Different brain areas may have varying receptor densities and binding characteristics." />
+                </label>
+                <select 
+                  onChange={handleTargetChange}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    fontFamily: outfit.style.fontFamily,
+                    fontSize: '1.1rem'
+                  }}>
+                  {targets.map(option => 
+                    <option key={option} value={option}>{option}</option>
+                  )}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '1.5rem',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <h4 style={{ 
+              color: '#2c3e50', 
+              marginBottom: '1rem',
+              fontFamily: outfit.style.fontFamily,
+              fontSize: '1.5rem'
+            }}>Reduction Settings</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  color: '#666',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: '1.1rem'
+                }}>
+                  Starting Dose
+                  <TooltipComponent text="Enter your current medication dose in milligrams (mg). This will be used as the starting point for calculating the reduction schedule." />
+                </label>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max={maxDose} 
+                  onChange={handleStartingPoint}
+                  placeholder={`Enter your starting dose`}
                   style={{
                     width: '100%',
                     padding: '0.75rem',
@@ -834,146 +785,173 @@ const SimpleChart = () => {
                     fontSize: '1.1rem'
                   }}
                 />
-              )}
-            </div>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '0.5rem', 
-                color: '#666',
-                fontFamily: outfit.style.fontFamily,
-                fontSize: '1.1rem'
-              }}>
-                Reduction Preference
-                <TooltipComponent text="Relative: Reduces by a percentage of the current occupancy. Absolute: Reduces to specific occupancy percentages." />
-              </label>
-              <select 
-                value={reductionPreference}
-                onChange={handleReductionPreference}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
+              </div>
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  color: '#666',
                   fontFamily: outfit.style.fontFamily,
                   fontSize: '1.1rem'
                 }}>
-                <option value="relative">Relative</option>
-                <option value="absolute">Absolute</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '1.5rem',
-        marginTop: '1.5rem'
-      }}>
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          <h4 style={{ 
-            color: '#2c3e50', 
-            marginBottom: '1.5rem',
-            fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
-            borderBottom: '2px solid #f0f0f0',
-            paddingBottom: '0.5rem',
-            fontFamily: outfit.style.fontFamily
-          }}>
-            Receptor Occupancy Graph
-            <TooltipComponent text="The curve shows the relationship between drug dose and receptor occupancy. Points on the curve represent reduction steps." />
-          </h4>
-          <div style={{ height: 'clamp(300px, 50vw, 500px)' }}>
-            <Line data={data} options={options} />
-          </div>
-        </div>
-
-        <div style={{
-          backgroundColor: '#fff',
-          padding: '1.5rem',
-          borderRadius: '12px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-          
-          <div>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              marginBottom: '1.5rem',
-              borderBottom: '2px solid #f0f0f0',
-              paddingBottom: '0.5rem'
-            }}>
-              <h3 style={{ 
-                color: '#2c3e50',
-                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
-                margin: 0,
-                fontFamily: outfit.style.fontFamily
-              }}>
-                {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
-              </h3>
-              <TooltipComponent text={reductionPreference === 'relative' 
-                ? "Relative reduction: Each step reduces the current occupancy by a fixed percentage." 
-                : "Absolute reduction: Each step reduces to a specific occupancy percentage."} />
-            </div>
-            {!startingPoint ? (
-              <div style={{
-                backgroundColor: '#f8f9fa',
-                padding: '2rem',
-                borderRadius: '8px',
-                textAlign: 'center',
-                border: '2px dashed #e0e0e0',
-                marginBottom: '1rem'
-              }}>
-                <div style={{
-                  fontSize: '1.2rem',
-                  color: '#666',
-                  marginBottom: '0.5rem',
-                  fontFamily: outfit.style.fontFamily
-                }}>
-                  Enter a Starting Dose to View Reduction Schedule
-                </div>
-                <div style={{
-                  fontSize: '0.9rem',
-                  color: '#888',
-                  fontFamily: outfit.style.fontFamily
-                }}>
-                  The reduction schedule will be calculated based on your current medication dose
-                </div>
+                  Occupancy Reduction (%)
+                  <TooltipComponent text="Choose how much to reduce the receptor occupancy at each step. A smaller percentage means a more gradual reduction." />
+                </label>
+                <select 
+                  onChange={handleReductionRate}
+                  value={showCustomReduction ? 'other' : reductionRate.toString()}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    fontFamily: outfit.style.fontFamily,
+                    fontSize: '1.1rem',
+                    marginBottom: showCustomReduction ? '0.5rem' : '0'
+                  }}>
+                  <option value="5">5%</option>
+                  <option value="10">10%</option>
+                  <option value="15">15%</option>
+                  <option value="20">20%</option>
+                  <option value="other">Other</option>
+                </select>
+                {showCustomReduction && (
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={customReductionRate}
+                    onChange={handleCustomReductionRate}
+                    placeholder="Enter custom reduction rate"
+                    style={{
+                      width: '100%',
+                      padding: '0.75rem',
+                      borderRadius: '4px',
+                      border: '1px solid #ddd',
+                      fontFamily: outfit.style.fontFamily,
+                      fontSize: '1.1rem'
+                    }}
+                  />
+                )}
               </div>
-            ) : (
-              <ol style={{ 
-                listStyleType: 'none',
-                padding: 0,
-                margin: 0
-              }}>
-                <li style={{
-                  padding: '0.75rem',
-                  backgroundColor: '#f8f9fa',
-                  marginBottom: '0.5rem',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
+              <div>
+                <label style={{ 
+                  display: 'block', 
+                  marginBottom: '0.5rem', 
+                  color: '#666',
                   fontFamily: outfit.style.fontFamily,
-                  fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
-                  flexWrap: 'wrap',
-                  gap: '0.5rem',
-                  border: '1px solid #e0e0e0',
-                  transition: 'all 0.3s ease'
+                  fontSize: '1.1rem'
                 }}>
-                  <span>Starting Dose</span>
-                  <span style={{ fontWeight: 'bold' }}>
-                    {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
-                  </span>
-                </li>
-                {(reductionPreference === 'relative' ? relativeValues : absoluteValues).slice(1).map((value, index) => (
-                  <li key={`reduction-${index}`} style={{
+                  Reduction Preference
+                  <TooltipComponent text="Relative: Reduces by a percentage of the current occupancy. Absolute: Reduces to specific occupancy percentages." />
+                </label>
+                <select 
+                  value={reductionPreference}
+                  onChange={handleReductionPreference}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    fontFamily: outfit.style.fontFamily,
+                    fontSize: '1.1rem'
+                  }}>
+                  <option value="relative">Relative</option>
+                  <option value="absolute">Absolute</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '1.5rem',
+          marginTop: '1.5rem'
+        }}>
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '1.5rem',
+            borderRadius: '12px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            <h4 style={{ 
+              color: '#2c3e50', 
+              marginBottom: '1.5rem',
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+              borderBottom: '2px solid #f0f0f0',
+              paddingBottom: '0.5rem',
+              fontFamily: outfit.style.fontFamily
+            }}>
+              Receptor Occupancy Graph
+              <TooltipComponent text="The curve shows the relationship between drug dose and receptor occupancy. Points on the curve represent reduction steps." />
+            </h4>
+            <div style={{ height: 'clamp(300px, 50vw, 500px)' }}>
+              <Line data={data} options={options} />
+            </div>
+          </div>
+
+          <div style={{
+            backgroundColor: '#fff',
+            padding: '1.5rem',
+            borderRadius: '12px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          }}>
+            
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                marginBottom: '1.5rem',
+                borderBottom: '2px solid #f0f0f0',
+                paddingBottom: '0.5rem'
+              }}>
+                <h3 style={{ 
+                  color: '#2c3e50',
+                  fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                  margin: 0,
+                  fontFamily: outfit.style.fontFamily
+                }}>
+                  {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
+                </h3>
+                <TooltipComponent text={reductionPreference === 'relative' 
+                  ? "Relative reduction: Each step reduces the current occupancy by a fixed percentage." 
+                  : "Absolute reduction: Each step reduces to a specific occupancy percentage."} />
+              </div>
+              {!startingPoint ? (
+                <div style={{
+                  backgroundColor: '#f8f9fa',
+                  padding: '2rem',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                  border: '2px dashed #e0e0e0',
+                  marginBottom: '1rem'
+                }}>
+                  <div style={{
+                    fontSize: '1.2rem',
+                    color: '#666',
+                    marginBottom: '0.5rem',
+                    fontFamily: outfit.style.fontFamily
+                  }}>
+                    Enter a Starting Dose to View Reduction Schedule
+                  </div>
+                  <div style={{
+                    fontSize: '0.9rem',
+                    color: '#888',
+                    fontFamily: outfit.style.fontFamily
+                  }}>
+                    The reduction schedule will be calculated based on your current medication dose
+                  </div>
+                </div>
+              ) : (
+                <ol style={{ 
+                  listStyleType: 'none',
+                  padding: 0,
+                  margin: 0
+                }}>
+                  <li style={{
                     padding: '0.75rem',
                     backgroundColor: '#f8f9fa',
                     marginBottom: '0.5rem',
@@ -987,218 +965,165 @@ const SimpleChart = () => {
                     border: '1px solid #e0e0e0',
                     transition: 'all 0.3s ease'
                   }}>
-                    <span>Step {index + 1}</span>
+                    <span>Starting Dose</span>
                     <span style={{ fontWeight: 'bold' }}>
-                      {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+                      {effectiveMaxDose} mg ({((vMax * effectiveMaxDose) / (km + effectiveMaxDose)).toFixed(2)}%)
                     </span>
                   </li>
-                ))}
-              </ol>
-            )}
+                  {(reductionPreference === 'relative' ? relativeValues : absoluteValues).slice(1).map((value, index) => (
+                    <li key={`reduction-${index}`} style={{
+                      padding: '0.75rem',
+                      backgroundColor: '#f8f9fa',
+                      marginBottom: '0.5rem',
+                      borderRadius: '4px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      fontFamily: outfit.style.fontFamily,
+                      fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+                      flexWrap: 'wrap',
+                      gap: '0.5rem',
+                      border: '1px solid #e0e0e0',
+                      transition: 'all 0.3s ease'
+                    }}>
+                      <span>Step {index + 1}</span>
+                      <span style={{ fontWeight: 'bold' }}>
+                        {value.dose.toFixed(2)} mg ({value.occupancy.toFixed(2)}%)
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
           </div>
         </div>
-      </div>
-
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '1.5rem',
-        borderRadius: '12px',
-        marginTop: '1.5rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-      }}>
-        <h2 style={{
-          fontSize: 'clamp(1.5rem, 4vw, 2rem)',
-          color: '#2c3e50',
-          marginBottom: '1.5rem',
-          fontWeight: '500',
-          fontFamily: outfit.style.fontFamily
-        }}>
-          About the Calculator
-        </h2>
 
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.5rem',
-          marginBottom: '1.5rem'
+          backgroundColor: '#f8f9fa',
+          padding: '1.5rem',
+          borderRadius: '12px',
+          marginTop: '1.5rem',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
-          <div>
-            <h3 style={{
-              fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
-              color: '#2c3e50',
-              marginBottom: '1rem',
-              fontWeight: '500',
-              fontFamily: outfit.style.fontFamily
-            }}>
-              The Model
-            </h3>
-            <p style={{
-              lineHeight: '1.6',
-              color: '#444',
-              marginBottom: '1rem',
-              fontFamily: outfit.style.fontFamily,
-              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
-            }}>
-              This calculator uses the Michaelis-Menten equation to model the relationship between drug dose and receptor occupancy:
-            </p>
-            <div style={{
-              backgroundColor: '#fff',
-              padding: '1rem',
-              borderRadius: '6px',
-              marginBottom: '1rem',
-              fontFamily: 'monospace',
-              fontSize: 'clamp(1rem, 3vw, 1.2rem)',
-              color: '#2c3e50',
-              overflowX: 'auto'
-            }}>
-              V = (Vmax * [S]) / (Km + [S])
-            </div>
-            <p style={{
-              lineHeight: '1.6',
-              color: '#444',
-              fontFamily: outfit.style.fontFamily,
-              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
-            }}>
-              Where:
-              <ul style={{
-                listStyleType: 'none',
-                paddingLeft: '1rem',
-                marginTop: '0.5rem',
+          <h2 style={{
+            fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+            color: '#2c3e50',
+            marginBottom: '1.5rem',
+            fontWeight: '500',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            About the Calculator
+          </h2>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '1.5rem',
+            marginBottom: '1.5rem'
+          }}>
+            <div>
+              <h3 style={{
+                fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
+                color: '#2c3e50',
+                marginBottom: '1rem',
+                fontWeight: '500',
+                fontFamily: outfit.style.fontFamily
+              }}>
+                The Model
+              </h3>
+              <p style={{
+                lineHeight: '1.6',
+                color: '#444',
+                marginBottom: '1rem',
                 fontFamily: outfit.style.fontFamily,
                 fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
               }}>
-                <li>• Vmax: Maximum receptor occupancy (horizontal asymptote)</li>
-                <li>• Km: Dose at which occupancy is half of Vmax</li>
-                <li>• [S]: Drug dose</li>
-              </ul>
-            </p>
+                This calculator uses the Michaelis-Menten equation to model the relationship between drug dose and receptor occupancy:
+              </p>
+              <div style={{
+                backgroundColor: '#fff',
+                padding: '1rem',
+                borderRadius: '6px',
+                marginBottom: '1rem',
+                fontFamily: 'monospace',
+                fontSize: 'clamp(1rem, 3vw, 1.2rem)',
+                color: '#2c3e50',
+                overflowX: 'auto'
+              }}>
+                V = (Vmax * [S]) / (Km + [S])
+              </div>
+              <p style={{
+                lineHeight: '1.6',
+                color: '#444',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
+              }}>
+                Where:
+                <ul style={{
+                  listStyleType: 'none',
+                  paddingLeft: '1rem',
+                  marginTop: '0.5rem',
+                  fontFamily: outfit.style.fontFamily,
+                  fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
+                }}>
+                  <li>• Vmax: Maximum receptor occupancy (horizontal asymptote)</li>
+                  <li>• Km: Dose at which occupancy is half of Vmax</li>
+                  <li>• [S]: Drug dose</li>
+                </ul>
+              </p>
+            </div>
+
+            <div>
+              <h3 style={{
+                fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
+                color: '#2c3e50',
+                marginBottom: '1rem',
+                fontWeight: '500',
+                fontFamily: outfit.style.fontFamily
+              }}>
+                How to Use
+              </h3>
+              <ol style={{
+                paddingLeft: '1.5rem',
+                color: '#444',
+                lineHeight: '1.6',
+                fontFamily: outfit.style.fontFamily,
+                fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
+              }}>
+                <li style={{ marginBottom: '0.5rem' }}>Select your antidepressant and target brain region</li>
+                <li style={{ marginBottom: '0.5rem' }}>Enter your starting dose</li>
+                <li style={{ marginBottom: '0.5rem' }}>Choose your desired reduction rate</li>
+                <li style={{ marginBottom: '0.5rem' }}>Select between relative or absolute reduction</li>
+                <li style={{ marginBottom: '0.5rem' }}>View the graph and reduction schedule</li>
+              </ol>
+            </div>
           </div>
 
-          <div>
-            <h3 style={{
-              fontSize: 'clamp(1.3rem, 3.5vw, 1.6rem)',
-              color: '#2c3e50',
-              marginBottom: '1rem',
-              fontWeight: '500',
-              fontFamily: outfit.style.fontFamily
-            }}>
-              How to Use
-            </h3>
-            <ol style={{
-              paddingLeft: '1.5rem',
-              color: '#444',
-              lineHeight: '1.6',
-              fontFamily: outfit.style.fontFamily,
-              fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)'
-            }}>
-              <li style={{ marginBottom: '0.5rem' }}>Select your antidepressant and target brain region</li>
-              <li style={{ marginBottom: '0.5rem' }}>Enter your starting dose</li>
-              <li style={{ marginBottom: '0.5rem' }}>Choose your desired reduction rate</li>
-              <li style={{ marginBottom: '0.5rem' }}>Select between relative or absolute reduction</li>
-              <li style={{ marginBottom: '0.5rem' }}>View the graph and reduction schedule</li>
-            </ol>
+          <div style={{
+            fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
+            color: '#666',
+            borderTop: '1px solid #e9ecef',
+            paddingTop: '1rem',
+            marginTop: '1rem',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            Based on research from: 
+            <a 
+              href="https://www.nature.com/articles/s41380-021-01285-w#Sec7" 
+              style={{ 
+                color: '#3498db', 
+                textDecoration: 'none',
+                marginLeft: '0.5rem',
+                fontWeight: '500'
+              }}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review
+            </a>
           </div>
         </div>
-
-        <div style={{
-          fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-          color: '#666',
-          borderTop: '1px solid #e9ecef',
-          paddingTop: '1rem',
-          marginTop: '1rem',
-          fontFamily: outfit.style.fontFamily
-        }}>
-          Based on research from: 
-          <a 
-            href="https://www.nature.com/articles/s41380-021-01285-w#Sec7" 
-            style={{ 
-              color: '#3498db', 
-              textDecoration: 'none',
-              marginLeft: '0.5rem',
-              fontWeight: '500'
-            }}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review
-          </a>
-        </div>
-      </div>
-
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '1.5rem',
-        borderRadius: '12px',
-        marginTop: '1.5rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-        borderTop: '1px solid #e9ecef'
-      }}>
-        <h2 style={{
-          fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
-          color: '#2c3e50',
-          marginBottom: '1rem',
-          fontWeight: '500',
-          fontFamily: outfit.style.fontFamily
-        }}>
-          Important Disclaimer
-        </h2>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '1.5rem'
-        }}>
-          <div>
-            <h3 style={{
-              fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
-              color: '#2c3e50',
-              marginBottom: '0.75rem',
-              fontWeight: '500',
-              fontFamily: outfit.style.fontFamily
-            }}>
-              Medical Advice
-            </h3>
-            <p style={{
-              lineHeight: '1.6',
-              color: '#444',
-              fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-              fontFamily: outfit.style.fontFamily
-            }}>
-              This calculator is for informational purposes only and should not be used as a substitute for professional medical advice. Always consult with your healthcare provider before making any changes to your medication regimen.
-            </p>
-          </div>
-          <div>
-            <h3 style={{
-              fontSize: 'clamp(1.1rem, 2.5vw, 1.3rem)',
-              color: '#2c3e50',
-              marginBottom: '0.75rem',
-              fontWeight: '500',
-              fontFamily: outfit.style.fontFamily
-            }}>
-              Development Status
-            </h3>
-            <p style={{
-              lineHeight: '1.6',
-              color: '#444',
-              fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
-              fontFamily: outfit.style.fontFamily
-            }}>
-              This tool is under active development. The calculations and data presented are based on current research but may be updated as new information becomes available.
-            </p>
-          </div>
-        </div>
-        <div style={{
-          marginTop: '1.5rem',
-          paddingTop: '1rem',
-          borderTop: '1px solid #e9ecef',
-          textAlign: 'center',
-          color: '#666',
-          fontSize: 'clamp(0.8rem, 2vw, 0.9rem)',
-          fontFamily: outfit.style.fontFamily
-        }}>
-          © {new Date().getFullYear()} Antidepressants Calculator. All rights reserved.
-        </div>
-      </div>
-    </div>
+      </Layout>
+    );
 }
 
 export default SimpleChart

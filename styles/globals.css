@@ -1,0 +1,20 @@
+/* Global styles */
+body {
+  transition: opacity 0.3s ease;
+}
+
+.page-transition-enter {
+  opacity: 0;
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+}
+
+.page-transition-exit {
+  opacity: 1;
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+} 

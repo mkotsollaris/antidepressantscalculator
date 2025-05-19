@@ -1,0 +1,57 @@
+.header {
+  transition: all 0.3s ease;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-family: var(--outfit-font);
+  position: relative;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.navLink:hover,
+.navLink.active {
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #1a1a1a;
+  transition: width 0.3s ease;
+}
+
+.navLink:hover::after,
+.navLink.active::after {
+  width: 100%;
+}
+
+.logo {
+  text-decoration: none;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: var(--outfit-font);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.logo:hover,
+.logo.active {
+  color: #1a1a1a;
+  transform: scale(1.02);
+}
+
+/* Add transition for the active state */
+.active {
+  transition: all 0.3s ease;
+} 
