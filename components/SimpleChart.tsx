@@ -885,21 +885,25 @@ const SimpleChart = () => {
         const footerY = pageHeight - 20;
         pdf.setFontSize(8);
         pdf.setFont('helvetica', 'italic');
-        pdf.text('This report is for educational purposes only. Please consult with your healthcare provider.', pageWidth / 2, footerY, { align: 'center' });
+        pdf.text('This report is only for informational and educational purposes. It is not a substitute for professional medical advice.', pageWidth / 2, footerY, { align: 'center' });
+        pdf.text('Do not use this calculator to make any decisions about medication or treatment.', pageWidth / 2, footerY + 4, { align: 'center' });
         
         // Footer text with clickable link
         const footerText = 'For more information, please visit: ';
         const urlText = 'antidepressantscalculator.vercel.app';
+        const rightsText = '. All rights reserved.';
         const footerTextWidth = pdf.getTextWidth(footerText);
         const urlTextWidth = pdf.getTextWidth(urlText);
-        const totalTextWidth = footerTextWidth + urlTextWidth;
+        const rightsTextWidth = pdf.getTextWidth(rightsText);
+        const totalTextWidth = footerTextWidth + urlTextWidth + rightsTextWidth;
         const footerStartX = (pageWidth - totalTextWidth) / 2;
         
-        pdf.text(footerText, footerStartX, footerY + 5);
+        pdf.text(footerText, footerStartX, footerY + 8);
         pdf.setTextColor(0, 0, 255); // Blue color for link
-        pdf.text(urlText, footerStartX + footerTextWidth, footerY + 5);
-        pdf.link(footerStartX + footerTextWidth, footerY + 5 - 3, urlTextWidth, 6, { url: 'https://antidepressantscalculator.vercel.app/' });
+        pdf.text(urlText, footerStartX + footerTextWidth, footerY + 8);
+        pdf.link(footerStartX + footerTextWidth, footerY + 8 - 3, urlTextWidth, 6, { url: 'https://antidepressantscalculator.vercel.app/' });
         pdf.setTextColor(0, 0, 0); // Reset to black
+        pdf.text(rightsText, footerStartX + footerTextWidth + urlTextWidth, footerY + 8);
         
         // Save the PDF
         pdf.save(`${selectedAntiDepressant.replace(/[^a-zA-Z0-9]/g, '_')}_reduction_schedule.pdf`);
@@ -936,7 +940,7 @@ const SimpleChart = () => {
             marginBottom: '1.5rem',
             lineHeight: '1.6'
           }}>
-            Calculate and visualize the relationship between drug dose and receptor occupancy.
+            Calculate and visualize dynamic hyperbolic tapering schedules for antidepressants based on dose-serotonin transporter occupancy curves.
           </div>
         </div>
 
@@ -968,7 +972,7 @@ const SimpleChart = () => {
                   fontSize: '1.1rem'
                 }}>
                   Antidepressant
-                  <TooltipComponent text="Select the antidepressant medication you are currently taking. Each medication has specific receptor binding properties that affect the reduction schedule." />
+                  <TooltipComponent text="Select one of the available antidepressants. Each medication has different dose-occupancy curves that affect the tapering schedule." />
                 </label>
                 <select 
                   onChange={handleDropdownChange}
@@ -994,7 +998,7 @@ const SimpleChart = () => {
                   fontSize: '1.1rem'
                 }}>
                   Brain Area
-                  <TooltipComponent text="Select the brain region where the medication's effects are being measured. Different brain areas may have varying receptor densities and binding characteristics." />
+                  <TooltipComponent text="Select the brain area where the dose-occupancy relationship was established. Some medications have data for a single area." />
                 </label>
                 <select 
                   onChange={handleTargetChange}
@@ -1036,7 +1040,7 @@ const SimpleChart = () => {
                   fontSize: '1.1rem'
                 }}>
                   Starting Dose
-                  <TooltipComponent text="Enter your current medication dose in milligrams (mg). This will be used as the starting point for calculating the reduction schedule." />
+                  <TooltipComponent text="Input the starting dose (mg) to be used as the starting point for calculating the tapering schedule." />
                 </label>
                 <input 
                   type="number" 
@@ -1063,7 +1067,7 @@ const SimpleChart = () => {
                   fontSize: '1.1rem'
                 }}>
                   Occupancy Reduction (%)
-                  <TooltipComponent text="Choose how much to reduce the receptor occupancy at each step. A smaller percentage means a more gradual reduction." />
+                  <TooltipComponent text="Choose the receptor occupancy reduction rate for each step. A smaller percentage yields a more gradual reduction." />
                 </label>
                 <select 
                   onChange={handleReductionRate}
@@ -1111,7 +1115,7 @@ const SimpleChart = () => {
                   fontSize: '1.1rem'
                 }}>
                   Reduction Preference
-                  <TooltipComponent text="Relative: Reduces by a percentage of the current occupancy. Absolute: Reduces to specific occupancy percentages." />
+                  <TooltipComponent text="Relative: yields tapering schedules using the occupancy of the starting dose as the starting point for each occupancy reduction step. Absolute: yields tapering schedules by applying occupancy reduction percentage on the Y-axis." />
                 </label>
                 <select 
                   value={reductionPreference}
@@ -1226,9 +1230,7 @@ const SimpleChart = () => {
                 }}>
                   {reductionPreference === 'relative' ? 'Relative' : 'Absolute'} Reduction ({reductionRate}%)
                 </h3>
-                <TooltipComponent text={reductionPreference === 'relative' 
-                  ? "Relative reduction: Each step reduces the current occupancy by a fixed percentage." 
-                  : "Absolute reduction: Each step reduces to a specific occupancy percentage."} />
+                <TooltipComponent text="This table displays the tapering schedule based on input above. Drug doses are displayed in mg and SERT occupancy percentage in parentheses." />
               </div>
               {!startingPoint ? (
                 <div style={{
@@ -1323,19 +1325,26 @@ const SimpleChart = () => {
           backgroundColor: '#f8f9fa',
           padding: '1.5rem',
           borderRadius: '12px',
-          marginTop: '1.5rem',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <h2 style={{
             fontSize: 'clamp(1.5rem, 4vw, 2rem)',
             color: '#2c3e50',
-            marginBottom: '1.5rem',
-            fontWeight: '500',
+            marginBottom: '1rem',
+            fontWeight: '600',
             fontFamily: outfit.style.fontFamily
           }}>
             About the Calculator
           </h2>
-
+          
+          <div style={{
+            fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+            color: '#666',
+            lineHeight: '1.6',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            This calculator is aimed to increase awareness about antidepressant hyperbolic tapering by empowering users to compute dose-specific and dynamic discontinuation schedules. Illustrating both dose-occupancy graphs and tapering schedules side-by-side, this tool can help simplify understanding of the hyperbolic tapering method.
+          </div>
 
           <div style={{
             fontSize: 'clamp(0.9rem, 2.5vw, 1rem)',
@@ -1345,7 +1354,7 @@ const SimpleChart = () => {
             marginTop: '1rem',
             fontFamily: outfit.style.fontFamily
           }}>
-            Based on research from: 
+            The dose-occupancy curves for the antidepressants included in the calculator come from research by Sørensen, Ruhé, & Munkholm, 2022:
             <a 
               href="https://www.nature.com/articles/s41380-021-01285-w#Sec7" 
               style={{ 
@@ -1359,6 +1368,30 @@ const SimpleChart = () => {
             >
               The relationship between dose and serotonin transporter occupancy of antidepressants—a systematic review
             </a>
+          </div>
+
+          <div style={{
+            fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
+            color: '#666',
+            borderTop: '1px solid #e9ecef',
+            paddingTop: '1.5rem',
+            marginTop: '1.5rem',
+            fontFamily: outfit.style.fontFamily
+          }}>
+            <h3 style={{
+              fontSize: 'clamp(1.1rem, 3vw, 1.3rem)',
+              color: '#2c3e50',
+              marginBottom: '1rem',
+              fontWeight: '600',
+              fontFamily: outfit.style.fontFamily
+            }}>
+              Disclaimer & User Agreement
+            </h3>
+            <div style={{ lineHeight: '1.6' }}>
+              This calculator is only for informational and educational purposes. It is not a substitute for professional medical advice. The content, including all calculations and outputs, is not intended to guide real-world medical decisions. Do not use this calculator to make any decisions about medication or treatment. Always seek the advice of a physician, pharmacist, or other qualified healthcare provider with any questions you may have regarding a medical condition or medication. While efforts have been made to ensure accuracy, the creators of this website make no guarantees about the correctness or applicability of the results and accept no responsibility for any harm, loss, or damage that may arise from the use of this calculator. By using this tool, you agree to these terms.
+            </div>
+            <div>
+          </div>
           </div>
         </div>
       </Layout>
