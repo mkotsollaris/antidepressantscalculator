@@ -246,7 +246,7 @@ const SimpleChart = () => {
     
     useEffect(() => {
       setOccupancyDifference(computeOccupancyDifference(reactionRate, percentagePoint));
-    }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint, startingPoint]);
+    }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint, startingPoint, reductionPreference, reductionRate]);
   
     // Calculate relative reduction values
     const getRelativeReductionValues = () => {
@@ -309,7 +309,7 @@ const SimpleChart = () => {
     const relativeValues = getRelativeReductionValues();
     const absoluteValues = getAbsoluteReductionValues();
     
-    const occupancyIncrements = absoluteValues.map((value, index) => ({
+    const occupancyIncrements = (reductionPreference === 'relative' ? relativeValues : absoluteValues).map((value, index) => ({
       x: Number(value.dose.toFixed(2)),
       y: Number(value.occupancy.toFixed(2)),
     }));
