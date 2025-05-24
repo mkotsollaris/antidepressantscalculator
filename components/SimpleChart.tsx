@@ -411,13 +411,38 @@ const SimpleChart = () => {
             size: 15,
             family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
           },
+          external: function(context) {
+            const { chart, tooltip } = context;
+            
+            // Hide tooltip if no data points or not magenta points
+            if (!tooltip.dataPoints || tooltip.dataPoints.length === 0) {
+              const tooltipEl = chart.canvas.parentNode.querySelector('.chartjs-tooltip');
+              if (tooltipEl) {
+                tooltipEl.style.opacity = '0';
+              }
+              return;
+            }
+            
+            // Check if any of the tooltip data points are from the magenta dataset (index 1)
+            const isMagentaPoint = tooltip.dataPoints.some(point => point.datasetIndex === 1);
+            if (!isMagentaPoint) {
+              const tooltipEl = chart.canvas.parentNode.querySelector('.chartjs-tooltip');
+              if (tooltipEl) {
+                tooltipEl.style.opacity = '0';
+              }
+              return;
+            }
+          },
           filter: function(tooltipItem) {
             // Only show tooltips for the second dataset (magenta points)
             return tooltipItem.datasetIndex === 1;
           },
           callbacks: {
             title: function(context) {
-              const pointIndex = context[0].dataIndex;
+              const pointIndex = context[0]?.dataIndex;
+              if (pointIndex === undefined || pointIndex === null) {
+                return null;
+              }
               if (pointIndex === 0) {
                 return 'Starting Dose';
               } else {
@@ -503,9 +528,8 @@ const SimpleChart = () => {
         }
       },
       interaction: {
-        mode: 'nearest',
-        axis: 'x',
-        intersect: false
+        mode: 'point',
+        intersect: true
       },
       elements: {
         line: {
@@ -648,6 +672,7 @@ const SimpleChart = () => {
           pointHoverBackgroundColor: 'rgba(186, 104, 200, 1)',
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2,
+          pointHitRadius: 8,
           showLine: false
         }
       ]
