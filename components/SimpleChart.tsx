@@ -252,6 +252,13 @@ const SimpleChart = () => {
       setOccupancyDifference(computeOccupancyDifference(reactionRate, percentagePoint));
     }, [selectedAntiDepressant, selectedTarget, currApproach, percentagePoint, startingPoint, reductionPreference, reductionRate]);
   
+    // Force chart update when hover state changes
+    useEffect(() => {
+      if (chartRef.current) {
+        chartRef.current.update('none');
+      }
+    }, [hoveredTableIndex]);
+
     // Calculate relative reduction values
     const getRelativeReductionValues = () => {
       if (!startingPoint) return [];
@@ -590,10 +597,19 @@ const SimpleChart = () => {
         mode: 'point',
         intersect: true
       },
-      onHover: (event, activeElements) => {
-        // If hovering directly on chart and we have table hover active, clear it
-        if (activeElements.length > 0 && hoveredTableIndex !== null) {
-          setHoveredTableIndex(null);
+      onHover: (event, activeElements, chart) => {
+        // If hovering directly on chart points
+        if (activeElements.length > 0) {
+          // Clear table hover state if it exists
+          if (hoveredTableIndex !== null) {
+            setHoveredTableIndex(null);
+          }
+        } else {
+          // If not hovering on any chart elements and no table hover, ensure everything is cleared
+          if (hoveredTableIndex === null) {
+            chart.setActiveElements([]);
+            chart.tooltip.setActiveElements([]);
+          }
         }
       },
       elements: {
@@ -730,15 +746,17 @@ const SimpleChart = () => {
           borderWidth: 0,
           fill: false,
           pointRadius: occupancyIncrements.map((_, index) => hoveredTableIndex === index ? 10 : 6),
-          pointHoverRadius: 12,
+          pointHoverRadius: occupancyIncrements.map((_, index) => hoveredTableIndex === index ? 10 : 6),
           pointBackgroundColor: occupancyIncrements.map((_, index) => 
             hoveredTableIndex === index ? 'rgba(186, 104, 200, 1)' : 'rgba(186, 104, 200, 0.7)'
           ),
           pointBorderColor: '#fff',
           pointBorderWidth: occupancyIncrements.map((_, index) => hoveredTableIndex === index ? 3 : 2),
-          pointHoverBackgroundColor: 'rgba(186, 104, 200, 1)',
+          pointHoverBackgroundColor: occupancyIncrements.map((_, index) => 
+            hoveredTableIndex === index ? 'rgba(186, 104, 200, 1)' : 'rgba(186, 104, 200, 0.7)'
+          ),
           pointHoverBorderColor: '#fff',
-          pointHoverBorderWidth: 2,
+          pointHoverBorderWidth: occupancyIncrements.map((_, index) => hoveredTableIndex === index ? 3 : 2),
           pointHitRadius: 8,
           showLine: false
         }
