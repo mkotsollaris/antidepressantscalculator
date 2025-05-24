@@ -259,7 +259,7 @@ const SimpleChart = () => {
       let currentDose = startDose;
       let currentOccupancy = startOccupancy;
       
-      while (currentDose > 0.1) { // Stop when dose is very small
+      while (currentDose > 0.01) { // Stop when dose is very small
         values.push({
           dose: Number(currentDose.toFixed(2)),
           occupancy: Number(currentOccupancy.toFixed(2))
