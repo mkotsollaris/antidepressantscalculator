@@ -399,19 +399,18 @@ const SimpleChart = () => {
       // Trigger tooltip programmatically
       if (chartRef.current) {
         const chart = chartRef.current;
-        // Force chart update to highlight the point
-        chart.update('none');
+        
+        // Clear any existing active elements first
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([]);
         
         // Simulate hover on the chart point
         const pointIndex = index; // Index corresponds to the point in occupancyIncrements
         if (pointIndex < occupancyIncrements.length) {
           const meta = chart.getDatasetMeta(1); // Dataset 1 is the points
           if (meta && meta.data[pointIndex]) {
-            const point = meta.data[pointIndex];
-            const tooltip = chart.tooltip;
-            
             // Create tooltip data
-            tooltip.setActiveElements([{
+            chart.tooltip.setActiveElements([{
               datasetIndex: 1,
               index: pointIndex
             }]);
@@ -420,10 +419,11 @@ const SimpleChart = () => {
               datasetIndex: 1,
               index: pointIndex
             }]);
-            
-            chart.update('none');
           }
         }
+        
+        // Force chart update to highlight the point
+        chart.update('none');
       }
     };
 
@@ -589,6 +589,12 @@ const SimpleChart = () => {
       interaction: {
         mode: 'point',
         intersect: true
+      },
+      onHover: (event, activeElements) => {
+        // If hovering directly on chart and we have table hover active, clear it
+        if (activeElements.length > 0 && hoveredTableIndex !== null) {
+          setHoveredTableIndex(null);
+        }
       },
       elements: {
         line: {
