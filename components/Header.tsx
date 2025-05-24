@@ -34,7 +34,7 @@ const Header = () => {
           className={`${styles.logo} ${isActive('/') ? styles.active : ''}`}
           prefetch={true}
         >
-          Antidepressants Calculator
+          Antidepressant Hyperbolic Calculator
         </Link>
         <div style={{
           display: 'flex',
