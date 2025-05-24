@@ -394,8 +394,8 @@ const SimpleChart = () => {
       maintainAspectRatio: false,
       plugins: {
         tooltip: {
-          mode: 'index',
-          intersect: false,
+          mode: 'point',
+          intersect: true,
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           titleColor: '#2c3e50',
           bodyColor: '#2c3e50',
@@ -410,6 +410,10 @@ const SimpleChart = () => {
           bodyFont: {
             size: 15,
             family: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+          },
+          filter: function(tooltipItem) {
+            // Only show tooltips for the second dataset (magenta points)
+            return tooltipItem.datasetIndex === 1;
           },
           callbacks: {
             label: function(context) {
@@ -616,7 +620,7 @@ const SimpleChart = () => {
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: 0,
-          pointHoverRadius: 8,
+          pointHoverRadius: 0,
           pointHoverBackgroundColor: 'rgba(0, 114, 178, 1)',
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2
