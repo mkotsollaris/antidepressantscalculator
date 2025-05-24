@@ -243,6 +243,7 @@ const SimpleChart = () => {
     const [showCustomReduction, setShowCustomReduction] = useState(false);
     const [customReductionRate, setCustomReductionRate] = useState('');
     const chartRef = useRef(null);
+    const [hoveredTableIndex, setHoveredTableIndex] = useState(null);
     
     // Get the effective max dose based on whether startingPoint is set
     const effectiveMaxDose = startingPoint ? startingPoint : maxDose;
@@ -391,7 +392,53 @@ const SimpleChart = () => {
       setOccupancyDifference(newOccupancyDifference);
     }
 
-    
+    // Handler for table row hover
+    const handleTableRowHover = (index: number) => {
+      setHoveredTableIndex(index);
+      
+      // Trigger tooltip programmatically
+      if (chartRef.current) {
+        const chart = chartRef.current;
+        // Force chart update to highlight the point
+        chart.update('none');
+        
+        // Simulate hover on the chart point
+        const pointIndex = index; // Index corresponds to the point in occupancyIncrements
+        if (pointIndex < occupancyIncrements.length) {
+          const meta = chart.getDatasetMeta(1); // Dataset 1 is the points
+          if (meta && meta.data[pointIndex]) {
+            const point = meta.data[pointIndex];
+            const tooltip = chart.tooltip;
+            
+            // Create tooltip data
+            tooltip.setActiveElements([{
+              datasetIndex: 1,
+              index: pointIndex
+            }]);
+            
+            chart.setActiveElements([{
+              datasetIndex: 1,
+              index: pointIndex
+            }]);
+            
+            chart.update('none');
+          }
+        }
+      }
+    };
+
+    const handleTableRowLeave = () => {
+      setHoveredTableIndex(null);
+      
+      // Clear chart highlights and tooltips
+      if (chartRef.current) {
+        const chart = chartRef.current;
+        chart.setActiveElements([]);
+        chart.tooltip.setActiveElements([]);
+        chart.update('none');
+      }
+    };
+
     const options = {
       responsive: true,
       maintainAspectRatio: false,
@@ -417,6 +464,11 @@ const SimpleChart = () => {
           external: function(context) {
             const { chart, tooltip } = context;
             
+            // Always show tooltip if triggered by table hover
+            if (hoveredTableIndex !== null) {
+              return;
+            }
+            
             // Hide tooltip if no data points or not magenta points
             if (!tooltip.dataPoints || tooltip.dataPoints.length === 0) {
               const tooltipEl = chart.canvas.parentNode.querySelector('.chartjs-tooltip');
@@ -437,6 +489,10 @@ const SimpleChart = () => {
             }
           },
           filter: function(tooltipItem) {
+            // Always show tooltips when triggered by table hover
+            if (hoveredTableIndex !== null) {
+              return tooltipItem.datasetIndex === 1;
+            }
             // Only show tooltips for the second dataset (magenta points)
             return tooltipItem.datasetIndex === 1;
           },
@@ -667,11 +723,13 @@ const SimpleChart = () => {
           borderColor: 'rgba(186, 104, 200, 1)',         // Magenta
           borderWidth: 0,
           fill: false,
-          pointRadius: 6,
+          pointRadius: occupancyIncrements.map((_, index) => hoveredTableIndex === index ? 10 : 6),
           pointHoverRadius: 12,
-          pointBackgroundColor: 'rgba(186, 104, 200, 1)',
+          pointBackgroundColor: occupancyIncrements.map((_, index) => 
+            hoveredTableIndex === index ? 'rgba(186, 104, 200, 1)' : 'rgba(186, 104, 200, 0.7)'
+          ),
           pointBorderColor: '#fff',
-          pointBorderWidth: 2,
+          pointBorderWidth: occupancyIncrements.map((_, index) => hoveredTableIndex === index ? 3 : 2),
           pointHoverBackgroundColor: 'rgba(186, 104, 200, 1)',
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2,
@@ -1179,9 +1237,12 @@ const SimpleChart = () => {
                   padding: 0,
                   margin: 0
                 }}>
-                  <li style={{
+                  <li 
+                    onMouseEnter={() => handleTableRowHover(0)}
+                    onMouseLeave={handleTableRowLeave}
+                    style={{
                     padding: '0.75rem',
-                    backgroundColor: '#f8f9fa',
+                    backgroundColor: hoveredTableIndex === 0 ? '#e3f2fd' : '#f8f9fa',
                     marginBottom: '0.5rem',
                     borderRadius: '4px',
                     display: 'flex',
@@ -1190,8 +1251,11 @@ const SimpleChart = () => {
                     fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
                     flexWrap: 'wrap',
                     gap: '0.5rem',
-                    border: '1px solid #e0e0e0',
-                    transition: 'all 0.3s ease'
+                    border: hoveredTableIndex === 0 ? '2px solid #2196f3' : '1px solid #e0e0e0',
+                    transition: 'all 0.3s ease',
+                    cursor: 'pointer',
+                    transform: hoveredTableIndex === 0 ? 'translateY(-1px)' : 'translateY(0)',
+                    boxShadow: hoveredTableIndex === 0 ? '0 4px 8px rgba(0,0,0,0.1)' : 'none'
                   }}>
                     <span>Starting Dose</span>
                     <span style={{ fontWeight: 'bold' }}>
@@ -1199,9 +1263,12 @@ const SimpleChart = () => {
                     </span>
                   </li>
                   {(reductionPreference === 'relative' ? relativeValues : absoluteValues).slice(1).map((value, index) => (
-                    <li key={`reduction-${index}`} style={{
+                    <li key={`reduction-${index}`} 
+                        onMouseEnter={() => handleTableRowHover(index + 1)}
+                        onMouseLeave={handleTableRowLeave}
+                        style={{
                       padding: '0.75rem',
-                      backgroundColor: '#f8f9fa',
+                      backgroundColor: hoveredTableIndex === index + 1 ? '#e3f2fd' : '#f8f9fa',
                       marginBottom: '0.5rem',
                       borderRadius: '4px',
                       display: 'flex',
@@ -1210,8 +1277,11 @@ const SimpleChart = () => {
                       fontSize: 'clamp(0.9rem, 2.5vw, 1.1rem)',
                       flexWrap: 'wrap',
                       gap: '0.5rem',
-                      border: '1px solid #e0e0e0',
-                      transition: 'all 0.3s ease'
+                      border: hoveredTableIndex === index + 1 ? '2px solid #2196f3' : '1px solid #e0e0e0',
+                      transition: 'all 0.3s ease',
+                      cursor: 'pointer',
+                      transform: hoveredTableIndex === index + 1 ? 'translateY(-1px)' : 'translateY(0)',
+                      boxShadow: hoveredTableIndex === index + 1 ? '0 4px 8px rgba(0,0,0,0.1)' : 'none'
                     }}>
                       <span>Step {index + 1}</span>
                       <span style={{ fontWeight: 'bold' }}>
