@@ -778,7 +778,7 @@ const SimpleChart = () => {
         // Header
         pdf.setFontSize(20);
         pdf.setFont('helvetica', 'bold');
-        pdf.text('Antidepressant Reduction Schedule Report', pageWidth / 2, 20, { align: 'center' });
+        pdf.text('Antidepressant Reduction Tapering Report', pageWidth / 2, 20, { align: 'center' });
         
         // Website info with clickable link
         pdf.setFontSize(8);
