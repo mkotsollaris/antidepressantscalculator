@@ -416,8 +416,16 @@ const SimpleChart = () => {
             return tooltipItem.datasetIndex === 1;
           },
           callbacks: {
+            title: function(context) {
+              const pointIndex = context[0].dataIndex;
+              if (pointIndex === 0) {
+                return 'Starting Dose';
+              } else {
+                return `Step ${pointIndex}`;
+              }
+            },
             label: function(context) {
-              return `Dose: ${context.parsed.x.toFixed(2)}mg, Occupancy: ${context.parsed.y.toFixed(2)}%`;
+              return `${context.parsed.x.toFixed(2)}mg (${context.parsed.y.toFixed(2)}%)`;
             }
           }
         },
