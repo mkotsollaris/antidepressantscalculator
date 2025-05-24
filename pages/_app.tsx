@@ -1,6 +1,7 @@
 import { AppProps } from 'next/app';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Script from 'next/script';
 import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -30,9 +31,25 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [router]);
 
   return (
-    <div className={isTransitioning ? 'page-transition-enter' : ''}>
-      <Component {...pageProps} />
-    </div>
+    <>
+      {/* Google Analytics */}
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-VC1S014NJF"
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-VC1S014NJF');
+        `}
+      </Script>
+
+      <div className={isTransitioning ? 'page-transition-enter' : ''}>
+        <Component {...pageProps} />
+      </div>
+    </>
   );
 }
 
